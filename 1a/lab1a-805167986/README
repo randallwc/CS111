@@ -1,0 +1,33 @@
+NAME: William Randall
+EMAIL: wrandall1000@gmail.com
+ID: 805167986
+
+Makefile:
+This is a file which has 3 options of 'make', 'make clean', and 'make dist'
+
+lab1a.c:
+This is a C source code file that will create a full duplex terminal that reads
+in chunks of 256 bits and writes each character at a time.  It can pass input and
+output between the terminal and the process. It has two options of 
+'--shell=program' and '--debug'
+
+README:
+This is this file which describes the other files and shows sources
+
+OTHER INFO:
+This lab1a takes lab0 and adds the fact that another shell can be echoed.
+This means that input can come from the terminal or another program.
+I used poll to be able to handle this asynchronous input.
+This poll could shut down in 3 ways.
+
+1 - closing the pipe from the keyboard reader
+2 - receiving a SIGPIPE from the keyboard reader
+3 - receiving an EOF from the shell reader
+
+These 3 ways are also not mutually independent and could happen in any order.
+
+Sources:
+https://en.wikibooks.org/wiki/Serial_Programming/termios
+https://www.gnu.org/software/libc/manual/html_node/Noncanon-Example.html
+https://linux.die.net/man/3/waitpid
+https://www.gnu.org/software/libc/manual/html_node/Process-Completion-Status.html

@@ -1,0 +1,74 @@
+NAME: William Randall
+EMAIL: wrandall1000@gmail.com
+ID: 805167986
+
+Makefile:
+This is a file that will allow for compiling of 'lab0' when 'make' is run.
+It will do a smoke test when 'make check' is run. This will run many variations of lab0 with
+different inputs.
+
+file to file
+stdin to stdout
+file to stdout
+stdin to file
+
+Then it checks for error codes from an unrecognized argument, input failed to open, 
+output failed to open, and segfaults.
+It will also run a clean of all the extraneous file when 'make clean' is run.
+It will compile the tarball when 'make dist' is called so that the program can be turned in.
+
+lab0.c:
+This file is the source code for the program which copies stdin to stdout.
+It also redirects stdin and stdout depending on arguments which are passed into it.
+
+backtrace.png:
+This is a screen shot showing taking of segfault within gdb and backtrace from segfault.
+
+breakpoint.png:
+This is a screen shot showing breakpoint stop before fault and inspection of null pointer.
+
+README:
+This is this file.
+
+Smoke test cases:
+I created files
+IN - input file
+OUT - output file
+BAD - file without any permisions 
+DIFF - empty diff file for the diff command
+
+# file to file
+./lab0 --input=IN --output=OUT
+# after this is run then the diff between IN and OUT should be empty
+
+# stdin to file
+./lab0 --output=OUT < IN
+# after this is run then the diff between IN and OUT should be empty
+
+# file to stdout
+./lab0 --input=IN > OUT
+# after this is run then the diff between IN and OUT should be empty
+
+# stdin to stdout
+./lab0 < IN > OUT
+# after this is run then the diff between IN and OUT should be empty
+
+# unrecognized argument # this should return error code 1
+./lab0 --wrong_arg
+
+# unable to open input file # this should return error code 2
+./lab0 --input=BAD
+
+# unable to open output file # this should return error code 3
+./lab0 --output=BAD
+
+# caught and recieved SIGSEGV # this should return error code 4
+./lab0 --catch --segfault
+./lab0 --segfault --catch
+
+OTHER INFO:
+In make check to pass the P0_check I had to supress the error messages from the
+test cases which would give errors and to do this I would put a '-' in front of
+each of these commands.
+Furthermore, I put an '@' infront of each command so that there would not 
+be an output from running any of the make commands unless an error occured.
