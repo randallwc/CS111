@@ -5,3 +5,20 @@ ID: 805167986
 Serial Number: BBGW18040074
 
 WiFi MAC aaddress: 2c:f7:f1:06:8f:49
+
+I am letting Amrith Deepak use my beaglebone to run and debug his code.
+His UID: 105331462
+
+README: This file which describes the other files
+
+Makefile: This file which makes the tarball
+
+my_beaglebone.jpg: This is an image of me and the beaglebone.
+
+connected.png: This is an image of the 'ifconfig' command.
+
+copy.png: This is an image of a filezilla SFTP where I transfer a file over an ssh connection.
+
+build_run.png: This is an image of me building and running a hello world program.
+
+git.png: This is an image of me cloning my CS111 repo on github and then listing the files that were downloaded on my beaglebone.
