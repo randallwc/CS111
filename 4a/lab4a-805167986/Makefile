@@ -18,7 +18,7 @@ clean:
 	rm -f $(NAME)
 	rm -f $(NAME)-$(UID).tar.gz
 
-dist: default
+dist:
 	tar -czf $(NAME)-$(UID).tar.gz README Makefile my_beaglebone.jpg connected.png copy.png build_run.png git.png
 
 
