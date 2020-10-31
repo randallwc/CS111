@@ -1,0 +1,76 @@
+ssh debian@192.168.7.2
+ssh root@192.168.7.2
+
+password:	password123
+
+hostname
+vim /etc/hostname
+vim /etc/hosts
+reboot
+
+connmanctl
+enable wifi
+scan wifi
+services
+connect <wifi service>
+quit
+
+ping google.com
+^C
+
+reboot
+
+ifconfig
+
+===out===
+SoftAp0   Link encap:Ethernet  HWaddr 74:e1:82:9b:e7:22  
+          inet addr:192.168.8.1  Bcast:192.168.8.255  Mask:255.255.255.0
+          UP BROADCAST MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+lo        Link encap:Local Loopback  
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          inet6 addr: ::1/128 Scope:Host
+          UP LOOPBACK RUNNING  MTU:65536  Metric:1
+          RX packets:162 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:162 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1 
+          RX bytes:14420 (14.0 KiB)  TX bytes:14420 (14.0 KiB)
+
+usb0      Link encap:Ethernet  HWaddr 74:e1:82:9b:e7:24  
+          inet addr:192.168.7.2  Bcast:192.168.7.255  Mask:255.255.255.0
+          inet6 addr: fe80::76e1:82ff:fe9b:e724/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:121 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:84 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:27775 (27.1 KiB)  TX bytes:20514 (20.0 KiB)
+
+wlan0     Link encap:Ethernet  HWaddr 2c:f7:f1:06:8f:49  
+          inet addr:192.168.1.88  Bcast:192.168.1.255  Mask:255.255.255.0
+          inet6 addr: 2600:1700:90d1:38d0::607/64 Scope:Global
+          inet6 addr: 2600:1700:90d1:38d0:2ef7:f1ff:fe06:8f49/64 Scope:Global
+          inet6 addr: fe80::2ef7:f1ff:fe06:8f49/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST DYNAMIC  MTU:1500  Metric:1
+          RX packets:68 errors:0 dropped:14 overruns:0 frame:0
+          TX packets:116 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:12265 (11.9 KiB)  TX bytes:24553 (23.9 KiB)
+===end===
+
+usb0 - inet addr:
+192.168.7.2
+wlan0 - inet addr:
+192.168.1.88
+
+ssh debian@192.168.1.88
+ssh root@192.168.1.88
+
+apt update
+apt search git
+apt install git
+
+
