@@ -1,9 +1,17 @@
+https://debian.beagleboard.org/images/bone-debian-8.7-iot-armhf-2017-03-19-4gb.img.xz
+
+http://192.168.7.2
+
 ssh debian@192.168.7.2
 ssh root@192.168.7.2
 
+passwd
 password:	password123
 
+
 hostname
+# studentID.lasr.cs.ucla.edu
+# 805167986.lasr.cs.ucla.edu
 vim /etc/hostname
 vim /etc/hosts
 reboot
@@ -66,8 +74,11 @@ usb0 - inet addr:
 wlan0 - inet addr:
 192.168.1.88
 
-ssh root@192.168.7.2 # usb connection
-ssh root@192.168.1.88 # ssh connection
+# usb connection
+ssh root@192.168.7.2
+
+# ssh connection
+ssh root@192.168.1.88
 
 apt update
 apt search git
@@ -76,3 +87,9 @@ apt install git
 git clone https://github.com/randallwc/CS111
 git fetch
 git pull
+
+lsb_release -a
+cat /etc/debian_version
+
+reboot
+shutdown -h now
