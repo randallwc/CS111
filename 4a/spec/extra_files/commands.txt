@@ -5,6 +5,8 @@ http://192.168.7.2
 ssh debian@192.168.7.2
 ssh root@192.168.7.2
 
+sudo vim /boot/uEnv.txt
+
 passwd
 password:	password123
 
@@ -16,10 +18,12 @@ vim /etc/hostname
 vim /etc/hosts
 reboot
 
+# https://wiki.archlinux.org/index.php/Connman#Connecting_to_an_open_access_point
 connmanctl
 enable wifi
 scan wifi
 services
+agent on
 connect <wifi service>
 quit
 
@@ -68,6 +72,53 @@ wlan0     Link encap:Ethernet  HWaddr 2c:f7:f1:06:8f:49
           collisions:0 txqueuelen:1000 
           RX bytes:12265 (11.9 KiB)  TX bytes:24553 (23.9 KiB)
 ===end===
+===out-new===
+SoftAp0   Link encap:Ethernet  HWaddr 74:e1:82:9b:e7:22
+          inet addr:192.168.8.1  Bcast:192.168.8.255  Mask:255.255.255.0
+          inet6 addr: fe80::76e1:82ff:fe9b:e722/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:35 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000
+          RX bytes:0 (0.0 B)  TX bytes:8017 (7.8 KiB)
+
+lo        Link encap:Local Loopback
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          inet6 addr: ::1/128 Scope:Host
+          UP LOOPBACK RUNNING  MTU:65536  Metric:1
+          RX packets:160 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:160 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1
+          RX bytes:14320 (13.9 KiB)  TX bytes:14320 (13.9 KiB)
+
+usb0      Link encap:Ethernet  HWaddr 74:e1:82:9b:e7:24
+          inet addr:192.168.7.2  Bcast:192.168.7.3  Mask:255.255.255.252
+          inet6 addr: fe80::76e1:82ff:fe9b:e724/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:260 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:76 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000
+          RX bytes:84508 (82.5 KiB)  TX bytes:18790 (18.3 KiB)
+
+usb1      Link encap:Ethernet  HWaddr 74:e1:82:9b:e7:27
+          inet addr:192.168.6.2  Bcast:192.168.6.3  Mask:255.255.255.252
+          UP BROADCAST MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+wlan0     Link encap:Ethernet  HWaddr 2c:f7:f1:06:8f:49
+          inet addr:192.168.1.88  Bcast:192.168.1.255  Mask:255.255.255.0
+          inet6 addr: 2600:1700:90d1:38d0:2ef7:f1ff:fe06:8f49/64 Scope:Global
+          inet6 addr: fe80::2ef7:f1ff:fe06:8f49/64 Scope:Link
+          inet6 addr: 2600:1700:90d1:38d0::49e/64 Scope:Global
+          UP BROADCAST RUNNING MULTICAST DYNAMIC  MTU:1500  Metric:1
+          RX packets:36785 errors:0 dropped:772 overruns:0 frame:0
+          TX packets:11553 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000
+          RX bytes:48330425 (46.0 MiB)  TX bytes:1490874 (1.4 MiB)
+===end-new===
 
 usb0 - inet addr:
 192.168.7.2
@@ -80,9 +131,9 @@ ssh root@192.168.7.2
 # ssh connection
 ssh root@192.168.1.88
 
-apt update
-apt search git
-apt install git
+sudo apt update
+sudo apt search git
+sudo apt install git
 
 git clone https://github.com/randallwc/CS111
 git fetch
@@ -90,6 +141,12 @@ git pull
 
 lsb_release -a
 cat /etc/debian_version
+
+# wiki for beaglebone
+https://elinux.org/Beagleboard:BeagleBoneBlack_Debian
+
+# enable root login
+https://groups.google.com/g/beaglebone/c/zKMGGQWCOTw
 
 reboot
 shutdown -h now
