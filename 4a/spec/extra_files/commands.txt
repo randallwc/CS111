@@ -127,9 +127,11 @@ wlan0 - inet addr:
 
 # usb connection
 ssh root@192.168.7.2
+ssh debian@192.168.7.2
 
 # ssh connection
 ssh root@192.168.1.88
+ssh debian@192.168.1.88
 
 sudo apt update
 sudo apt search git
