@@ -152,3 +152,11 @@ https://groups.google.com/g/beaglebone/c/zKMGGQWCOTw
 
 reboot
 shutdown -h now
+
+# fetch and reset all stuff
+git fetch --all
+git reset --hard origin/master
+
+https://linuxconfig.org/enable-ssh-root-login-on-debian-linux-server
+
+ssh debian@99.0.60.235 -p 22
