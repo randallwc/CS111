@@ -1,0 +1,79 @@
+NAME: William Randall
+EMAIL: wrandall1000@gmail.com
+ID: 805167986
+
+Files:
+
+SortedList.h ... header file for the sorted list
+SortedList.c ... implementation of the sorted list
+lab2_list.c ... source file for the list
+Makefile ... make file
+lab2b_list.csv ... the output from `make test`
+profile.out ... output from pprof
+lab2b_1.png ... throughput vs. number of threads for mutex and spin-lock synchronized list operations
+lab2b_2.png ... mean time per mutex wait and mean time per operation for mutex-synchronized list operations
+lab2b_3.png ... successful iterations vs. threads for each synchronization method
+lab2b_4.png ... throughput vs. number of threads for mutex synchronized partitioned lists
+lab2b_5.png ... throughput vs. number of threads for spin-lock-synchronized partitioned lists
+README ... this file
+lab2_list.gp ... this file makes the png files
+
+Answers to Questions:
+1 - QUESTION 2.3.1 - CPU time in the basic list implementation:
+	1.1 - Where do you believe most of the CPU time is spent in the 1 and 2-thread list tests ?
+	1.2 - Why do you believe these to be the most expensive parts of the code?
+
+		Most of the cpu time is spent on the list operations.
+		When there is a low number of threads, there is less competition for the shared list and less time spent waiting for locks to be released.
+
+	1.3 - Where do you believe most of the CPU time is being spent in the high-thread spin-lock tests?
+
+		Spin locks spend CPU time on spinning while waiting for an opportunity to operate on the list because their throughput is a lot lower.
+
+	1.4 - Where do you believe most of the CPU time is being spent in the high-thread mutex tests?
+
+		Mutex locks spend that time on sleeping while waiting for the Operating system to wake them up because their throughput is a lot lower.
+
+
+2 - QUESTION 2.3.2 - Execution Profiling:
+	2.1 - Where (what lines of code) are consuming most of the CPU time when the spin-lock version of the list exerciser is run with a large number of threads?
+
+	My code spent most of it's time in the `lock` function which waits for the lock to be released.
+
+	2.2 - Why does this operation become so expensive with large numbers of threads?
+
+	The more threads there are, the more time it must spend to wait for an oportunity to get the lock.
+
+3 - QUESTION 2.3.3 - Mutex Wait Time:
+	3.1 - Look at the average time per operation (vs. # threads) and the average wait-for-mutex time (vs. #threads).
+	3.2 - Why does the average lock-wait time rise so dramatically with the number of contending threads?
+	
+	The average lock-wait time rises because when there are more threads there is more time spent waiting to acquire the locks.
+
+	3.3 - Why does the completion time per operation rise (less dramatically) with the number of contending threads?
+
+	The completion time per operation rises because there is a higher number of threads that need to run operations on the list.
+
+	3.4 - How is it possible for the wait time per operation to go up faster (or higher) than the completion time per operation?
+
+	This is possible because the time waiting is directly porportional to the number of threads but the operation time isn't.
+
+4 - QUESTION 2.3.4 - Performance of Partitioned Lists
+	4.1 - Explain the change in performance of the synchronized methods as a function of the number of lists.
+
+	As there are more lists, the performance becomes better because the throughput increases dramatically.
+	
+	4.2 - Should the throughput continue increasing as the number of lists is further increased? If not, explain why not.
+	
+	It should increase until the ammount of lists approaches the number of iterations or when there is essentially no competition between threads over locks because each element has its own list.
+
+	4.3 - It seems reasonable to suggest the throughput of an N-way partitioned list should be equivalent to the throughput of a single list with fewer (1/N) threads. Does this appear to be true in the above curves? 
+
+	No it does not appear to be true.
+
+	4.4 - If not, explain why not.
+
+	Each sublist must have its own lock and every thread needs to lock a sublist before it can use it, so there is more time spent by the threads on locking.
+
+Sources:
+http://www.cse.yorku.ca/~oz/hash.html

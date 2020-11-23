@@ -1,0 +1,328 @@
+Total: 997 samples
+     883  88.6%  88.6%      883  88.6% lock
+      42   4.2%  92.8%       42   4.2% SortedList_lookup
+      23   2.3%  95.1%       68   6.8% SortedList_insert
+       5   0.5%  95.6%        5   0.5% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:203
+       4   0.4%  96.0%        4   0.4% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:1734
+       3   0.3%  96.3%        3   0.3% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:165
+       3   0.3%  96.6%        3   0.3% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:211
+       3   0.3%  96.9%        3   0.3% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:212
+       3   0.3%  97.2%        3   0.3% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:1734
+       2   0.2%  97.4%        2   0.2% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:225
+       2   0.2%  97.6%        2   0.2% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:226
+       2   0.2%  97.8%        2   0.2% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:239
+       2   0.2%  98.0%        2   0.2% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:243
+       2   0.2%  98.2%        2   0.2% __GI___clock_gettime
+       1   0.1%  98.3%        1   0.1% ?? /usr/src/debug////////glibc-2.17-c758a686/misc/../sysdeps/unix/sysv/linux/x86_64/clone.S:96
+       1   0.1%  98.4%        1   0.1% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:161
+       1   0.1%  98.5%        1   0.1% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:237
+       1   0.1%  98.6%        1   0.1% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:238
+       1   0.1%  98.7%        1   0.1% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:238
+       1   0.1%  98.8%        1   0.1% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:239
+       1   0.1%  98.9%        1   0.1% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:240
+       1   0.1%  99.0%        1   0.1% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:253
+       1   0.1%  99.1%        1   0.1% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:615
+       1   0.1%  99.2%        1   0.1% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:967
+       1   0.1%  99.3%        1   0.1% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:1324
+       1   0.1%  99.4%        1   0.1% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:1333
+       1   0.1%  99.5%        1   0.1% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:1505
+       1   0.1%  99.6%        1   0.1% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:1709
+       1   0.1%  99.7%        1   0.1% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:1721
+       1   0.1%  99.8%        1   0.1% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:1734
+       1   0.1%  99.9%        1   0.1% _init
+       1   0.1% 100.0%        1   0.1% list_hash
+       0   0.0% 100.0%      996  99.9% ?? /usr/src/debug////////glibc-2.17-c758a686/misc/../sysdeps/unix/sysv/linux/x86_64/clone.S:118
+       0   0.0% 100.0%      996  99.9% start_thread
+       0   0.0% 100.0%      996  99.9% thread
+ROUTINE ====================== thread in /u/ee/ugrad/culver/cs111/project2b/lab2_list.c
+     0    996 Total samples (flat / cumulative)
+     .      .  389: 			break;
+     .      .  390: 		//do nothing to unlock
+     .      .  391: 	}
+     .      .  392: }
+     .      .  393: 
+---
+     .      .  394: void * thread(void * parameters){
+     .      .  395: 	listParameters_t * arguments = (listParameters_t * ) parameters;
+     .      .  396: 
+     .      .  397: 	//set up hash value
+     .      .  398: 	int hash_val = 0;
+     .      .  399: 
+     .      .  400: 	//set up thread time variable
+     .      .  401: 	long thread_time = 0;
+     .      .  402: 
+     .      .  403: 	//make timespec structures
+     .      .  404: 	struct timespec start_time;
+     .      .  405: 	struct timespec end_time;
+     .      .  406: 
+     .      .  407: 	//insert all elements
+     .      .  408: 	for(int i = 0; i < arguments->iterations; i++){
+     .      .  409: 		//get which list to lock
+     .      .  410: 		hash_val = list_hash(arguments->list_amt, arguments->first_element_ptr[i].key);
+     .      .  411: 
+     .      .  412: 		//start time
+     .      1  413: 		clock_gettime(CLOCK_REALTIME, &start_time);
+     .      .  414: 
+     .      .  415: 		//lock during critical section
+     .    543  416: 		lock(hash_val,arguments->thread_type);
+     .      .  417: 
+     .      .  418: 		//end time
+     .      1  419: 		clock_gettime(CLOCK_REALTIME, &end_time);
+     .      .  420: 
+     .      .  421: 		//time in seconds
+     .      .  422: 		long seconds = end_time.tv_sec - start_time.tv_sec;
+     .      .  423: 
+     .      .  424: 		//time in nano seconds
+     .      .  425: 		long nano_seconds = end_time.tv_nsec - start_time.tv_nsec;
+     .      .  426: 
+     .      .  427: 		//handle underflow for nanoseconds
+     .      .  428: 		if(start_time.tv_nsec > end_time.tv_nsec){
+     .      .  429: 			nano_seconds += OVERFLOW;
+     .      .  430: 			seconds -= 1;
+     .      .  431: 		}
+     .      .  432: 
+     .      .  433: 		//add to thread time variable
+     .      .  434: 		thread_time += seconds * OVERFLOW + nano_seconds;
+     .      .  435: 
+     .      .  436: 		//insert all the elements into the empty list
+     .     68  437: 		SortedList_insert(&arguments->head_ptr[hash_val], &arguments->first_element_ptr[i]);
+     .      .  438: 
+     .      .  439: 		//unlock after critical section
+     .      .  440: 		unlock(hash_val,arguments->thread_type);
+     .      .  441: 	}
+     .      .  442: 
+     .      .  443: 	for(int i = 0; i < arguments->list_amt; i++){
+     .      .  444: 		//start time
+     .      .  445: 		clock_gettime(CLOCK_REALTIME, &start_time);
+     .      .  446: 
+     .      .  447: 		//lock during critical section
+     .      .  448: 		lock(i ,arguments->thread_type);
+     .      .  449: 
+     .      .  450: 		//end time
+     .      .  451: 		clock_gettime(CLOCK_REALTIME, &end_time);
+     .      .  452: 
+     .      .  453: 		//time in seconds
+     .      .  454: 		long seconds = end_time.tv_sec - start_time.tv_sec;
+     .      .  455: 
+     .      .  456: 		//time in nano seconds
+     .      .  457: 		long nano_seconds = end_time.tv_nsec - start_time.tv_nsec;
+     .      .  458: 
+     .      .  459: 		//handle underflow for nanoseconds
+     .      .  460: 		if(start_time.tv_nsec > end_time.tv_nsec){
+     .      .  461: 			nano_seconds += OVERFLOW;
+     .      .  462: 			seconds -= 1;
+     .      .  463: 		}
+     .      .  464: 
+     .      .  465: 		//add to thread time variable
+     .      .  466: 		thread_time += seconds * OVERFLOW + nano_seconds;
+     .      .  467: 
+     .      .  468: 		//check the list
+     .      .  469: 		if(SortedList_length(&arguments->head_ptr[i]) == -1){
+     .      .  470: 			fprintf(stderr, "List length is wrong. List is incorrect.\n");
+     .      .  471: 			exit(2);
+     .      .  472: 		}
+     .      .  473: 
+     .      .  474: 		//unlock after critical section
+     .      .  475: 		unlock(i ,arguments->thread_type);
+     .      .  476: 	}
+     .      .  477: 
+     .      .  478: 	//look up and delete each element
+     .      .  479: 	for(int i = 0; i < arguments->iterations; i++){
+     .      .  480: 		//get which list to lock
+     .      1  481: 		hash_val = list_hash(arguments->list_amt, arguments->first_element_ptr[i].key);
+     .      .  482: 
+     .      .  483: 		//start time
+     .      .  484: 		clock_gettime(CLOCK_REALTIME, &start_time);
+     .      .  485: 
+     .      .  486: 		//lock during critical section
+     .    340  487: 		lock(hash_val,arguments->thread_type);
+     .      .  488: 
+     .      .  489: 		//end time
+     .      .  490: 		clock_gettime(CLOCK_REALTIME, &end_time);
+     .      .  491: 
+     .      .  492: 		//time in seconds
+     .      .  493: 		long seconds = end_time.tv_sec - start_time.tv_sec;
+     .      .  494: 
+     .      .  495: 		//time in nano seconds
+     .      .  496: 		long nano_seconds = end_time.tv_nsec - start_time.tv_nsec;
+     .      .  497: 
+     .      .  498: 		//handle underflow for nanoseconds
+     .      .  499: 		if(start_time.tv_nsec > end_time.tv_nsec){
+     .      .  500: 			nano_seconds += OVERFLOW;
+     .      .  501: 			seconds -= 1;
+     .      .  502: 		}
+     .      .  503: 
+     .      .  504: 		//add to thread time variable
+     .      .  505: 		thread_time += seconds * OVERFLOW + nano_seconds;
+     .      .  506: 
+     .      .  507: 		//look up element
+     .     42  508: 		SortedListElement_t * element = SortedList_lookup(&arguments->head_ptr[hash_val], arguments->first_element_ptr[i].key);
+     .      .  509: 
+     .      .  510: 		//check if the element is NULL
+     .      .  511: 		if(element == NULL){
+     .      .  512: 			fprintf(stderr, "List is corrupted.  Error during lookup.  Null poiter access.\n");
+     .      .  513: 			exit(2);
+     .      .  514: 		}
+     .      .  515: 
+     .      .  516: 		//delete the element
+     .      .  517: 		if(SortedList_delete(element) == 1){
+     .      .  518: 			fprintf(stderr, "List is corrupted.  Error during delete.\n");
+     .      .  519: 			exit(2);
+     .      .  520: 		}
+     .      .  521: 
+     .      .  522: 		//unlock after critical section
+     .      .  523: 		unlock(hash_val,arguments->thread_type);
+     .      .  524: 	}
+     .      .  525: 
+     .      .  526: 	//update global time
+     .      .  527: 	__sync_add_and_fetch(&time_locked, thread_time);
+     .      .  528: 
+     .      .  529: 	return NULL;
+     .      .  530: 
+---
+ROUTINE ====================== thread in /u/ee/ugrad/culver/cs111/project2b/lab2_list.c
+     0    996 Total samples (flat / cumulative)
+     .      .  389: 			break;
+     .      .  390: 		//do nothing to unlock
+     .      .  391: 	}
+     .      .  392: }
+     .      .  393: 
+---
+     .      .  394: void * thread(void * parameters){
+     .      .  395: 	listParameters_t * arguments = (listParameters_t * ) parameters;
+     .      .  396: 
+     .      .  397: 	//set up hash value
+     .      .  398: 	int hash_val = 0;
+     .      .  399: 
+     .      .  400: 	//set up thread time variable
+     .      .  401: 	long thread_time = 0;
+     .      .  402: 
+     .      .  403: 	//make timespec structures
+     .      .  404: 	struct timespec start_time;
+     .      .  405: 	struct timespec end_time;
+     .      .  406: 
+     .      .  407: 	//insert all elements
+     .      .  408: 	for(int i = 0; i < arguments->iterations; i++){
+     .      .  409: 		//get which list to lock
+     .      .  410: 		hash_val = list_hash(arguments->list_amt, arguments->first_element_ptr[i].key);
+     .      .  411: 
+     .      .  412: 		//start time
+     .      1  413: 		clock_gettime(CLOCK_REALTIME, &start_time);
+     .      .  414: 
+     .      .  415: 		//lock during critical section
+     .    543  416: 		lock(hash_val,arguments->thread_type);
+     .      .  417: 
+     .      .  418: 		//end time
+     .      1  419: 		clock_gettime(CLOCK_REALTIME, &end_time);
+     .      .  420: 
+     .      .  421: 		//time in seconds
+     .      .  422: 		long seconds = end_time.tv_sec - start_time.tv_sec;
+     .      .  423: 
+     .      .  424: 		//time in nano seconds
+     .      .  425: 		long nano_seconds = end_time.tv_nsec - start_time.tv_nsec;
+     .      .  426: 
+     .      .  427: 		//handle underflow for nanoseconds
+     .      .  428: 		if(start_time.tv_nsec > end_time.tv_nsec){
+     .      .  429: 			nano_seconds += OVERFLOW;
+     .      .  430: 			seconds -= 1;
+     .      .  431: 		}
+     .      .  432: 
+     .      .  433: 		//add to thread time variable
+     .      .  434: 		thread_time += seconds * OVERFLOW + nano_seconds;
+     .      .  435: 
+     .      .  436: 		//insert all the elements into the empty list
+     .     68  437: 		SortedList_insert(&arguments->head_ptr[hash_val], &arguments->first_element_ptr[i]);
+     .      .  438: 
+     .      .  439: 		//unlock after critical section
+     .      .  440: 		unlock(hash_val,arguments->thread_type);
+     .      .  441: 	}
+     .      .  442: 
+     .      .  443: 	for(int i = 0; i < arguments->list_amt; i++){
+     .      .  444: 		//start time
+     .      .  445: 		clock_gettime(CLOCK_REALTIME, &start_time);
+     .      .  446: 
+     .      .  447: 		//lock during critical section
+     .      .  448: 		lock(i ,arguments->thread_type);
+     .      .  449: 
+     .      .  450: 		//end time
+     .      .  451: 		clock_gettime(CLOCK_REALTIME, &end_time);
+     .      .  452: 
+     .      .  453: 		//time in seconds
+     .      .  454: 		long seconds = end_time.tv_sec - start_time.tv_sec;
+     .      .  455: 
+     .      .  456: 		//time in nano seconds
+     .      .  457: 		long nano_seconds = end_time.tv_nsec - start_time.tv_nsec;
+     .      .  458: 
+     .      .  459: 		//handle underflow for nanoseconds
+     .      .  460: 		if(start_time.tv_nsec > end_time.tv_nsec){
+     .      .  461: 			nano_seconds += OVERFLOW;
+     .      .  462: 			seconds -= 1;
+     .      .  463: 		}
+     .      .  464: 
+     .      .  465: 		//add to thread time variable
+     .      .  466: 		thread_time += seconds * OVERFLOW + nano_seconds;
+     .      .  467: 
+     .      .  468: 		//check the list
+     .      .  469: 		if(SortedList_length(&arguments->head_ptr[i]) == -1){
+     .      .  470: 			fprintf(stderr, "List length is wrong. List is incorrect.\n");
+     .      .  471: 			exit(2);
+     .      .  472: 		}
+     .      .  473: 
+     .      .  474: 		//unlock after critical section
+     .      .  475: 		unlock(i ,arguments->thread_type);
+     .      .  476: 	}
+     .      .  477: 
+     .      .  478: 	//look up and delete each element
+     .      .  479: 	for(int i = 0; i < arguments->iterations; i++){
+     .      .  480: 		//get which list to lock
+     .      1  481: 		hash_val = list_hash(arguments->list_amt, arguments->first_element_ptr[i].key);
+     .      .  482: 
+     .      .  483: 		//start time
+     .      .  484: 		clock_gettime(CLOCK_REALTIME, &start_time);
+     .      .  485: 
+     .      .  486: 		//lock during critical section
+     .    340  487: 		lock(hash_val,arguments->thread_type);
+     .      .  488: 
+     .      .  489: 		//end time
+     .      .  490: 		clock_gettime(CLOCK_REALTIME, &end_time);
+     .      .  491: 
+     .      .  492: 		//time in seconds
+     .      .  493: 		long seconds = end_time.tv_sec - start_time.tv_sec;
+     .      .  494: 
+     .      .  495: 		//time in nano seconds
+     .      .  496: 		long nano_seconds = end_time.tv_nsec - start_time.tv_nsec;
+     .      .  497: 
+     .      .  498: 		//handle underflow for nanoseconds
+     .      .  499: 		if(start_time.tv_nsec > end_time.tv_nsec){
+     .      .  500: 			nano_seconds += OVERFLOW;
+     .      .  501: 			seconds -= 1;
+     .      .  502: 		}
+     .      .  503: 
+     .      .  504: 		//add to thread time variable
+     .      .  505: 		thread_time += seconds * OVERFLOW + nano_seconds;
+     .      .  506: 
+     .      .  507: 		//look up element
+     .     42  508: 		SortedListElement_t * element = SortedList_lookup(&arguments->head_ptr[hash_val], arguments->first_element_ptr[i].key);
+     .      .  509: 
+     .      .  510: 		//check if the element is NULL
+     .      .  511: 		if(element == NULL){
+     .      .  512: 			fprintf(stderr, "List is corrupted.  Error during lookup.  Null poiter access.\n");
+     .      .  513: 			exit(2);
+     .      .  514: 		}
+     .      .  515: 
+     .      .  516: 		//delete the element
+     .      .  517: 		if(SortedList_delete(element) == 1){
+     .      .  518: 			fprintf(stderr, "List is corrupted.  Error during delete.\n");
+     .      .  519: 			exit(2);
+     .      .  520: 		}
+     .      .  521: 
+     .      .  522: 		//unlock after critical section
+     .      .  523: 		unlock(hash_val,arguments->thread_type);
+     .      .  524: 	}
+     .      .  525: 
+     .      .  526: 	//update global time
+     .      .  527: 	__sync_add_and_fetch(&time_locked, thread_time);
+     .      .  528: 
+     .      .  529: 	return NULL;
+     .      .  530: 
+---
