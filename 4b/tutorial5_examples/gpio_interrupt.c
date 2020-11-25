@@ -4,10 +4,8 @@
 
 sig_atomic_t volatile run_flag = 1;
 
-void do_when_interrupted(int sig){
-	if(sig == SIGINT){
-		run_flag = 0;
-	}
+void do_when_interrupted(){
+	run_flag = 0;
 }
 
 int main() {
