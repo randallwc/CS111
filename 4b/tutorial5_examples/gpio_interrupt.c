@@ -5,6 +5,7 @@
 sig_atomic_t volatile run_flag = 1;
 
 void do_when_interrupted(){
+	printf("button pressed\n");
 	run_flag = 0;
 }
 
@@ -17,11 +18,14 @@ int main() {
 	mraa_gpio_isr(button, MRAA_GPIO_EDGE_RISING, &do_when_interrupted, NULL);
 	while(run_flag){
 		mraa_gpio_write(buzzer, 1);
+		printf("buzzer high\n");
 		sleep(1);
 		mraa_gpio_write(buzzer, 0);
+		printf("buzzer low\n");
 		sleep(1);
 	}
 	mraa_gpio_write(buzzer, 0);
+	printf("buzzer low\n");
 	mraa_gpio_close(button);
 	mraa_gpio_close(buzzer);
 	return 0;
