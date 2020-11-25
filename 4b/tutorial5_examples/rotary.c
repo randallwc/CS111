@@ -15,7 +15,7 @@ void do_when_interrupted(int sig){
 }
 
 int main() {
-	uint_t value;
+	uint16_t value;
 	mraa_gpio_context rotary;
 	rotary = mraa_gpio_init(1);
 	signal(SIGINT, do_when_interrupted);
