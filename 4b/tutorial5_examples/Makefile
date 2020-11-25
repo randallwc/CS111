@@ -9,3 +9,6 @@ buzzer:
 
 button:
 	$(CC) $(CFLAG) -o gpio_interrupt gpio_interrupt.c
+
+potentiometer:
+	$(CC) $(CFLAG) -o rotary rotary.c
