@@ -12,3 +12,6 @@ button:
 
 rotary:
 	$(CC) $(CFLAG) -o rotary rotary.c
+
+volume:
+	$(CC) $(CFLAG) -o buzzer_volume buzzer_volume.c
