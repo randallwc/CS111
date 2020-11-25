@@ -16,8 +16,9 @@ void do_when_interrupted(int sig){
 
 int main() {
 	uint16_t value;
-	mraa_gpio_context rotary;
-	rotary = mraa_gpio_init(1);
+	mraa_aio_context rotary;
+	rotary = mraa_aio_init(1);
+	printf("start\n");
 	signal(SIGINT, do_when_interrupted);
 	while(run_flag){
 		value = mraa_aio_read(rotary);
@@ -25,6 +26,6 @@ int main() {
 		usleep(SLEEP_TIME);
 	}
 	printf("shutdown\n");
-	mraa_gpio_close(rotary);
+	mraa_aio_close(rotary);
 	return 0;
 }
