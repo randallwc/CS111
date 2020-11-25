@@ -20,5 +20,3 @@ clean:
 
 dist:
 	tar -czf $(NAME)-$(UID).tar.gz README Makefile my_beaglebone.jpg connected.png copy.png build_run.png git.png
-
-

@@ -8,7 +8,7 @@ ssh root@192.168.7.2
 sudo vim /boot/uEnv.txt
 
 passwd
-password:	password123
+password:	will123
 
 
 hostname
