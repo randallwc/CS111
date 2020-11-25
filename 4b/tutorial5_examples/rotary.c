@@ -1,5 +1,5 @@
 #include <signal.h>
-#include <mraa/gpio.h>
+#include <mraa/aio.h>
 #include <unistd.h>
 #include <stdio.h>
 
@@ -22,7 +22,7 @@ int main() {
 	while(run_flag){
 		value = mraa_aio_read(rotary);
 		printf("value: %d\n", value);
-		usleep(SLEEP_TIME)
+		usleep(SLEEP_TIME);
 	}
 	printf("shutdown\n");
 	mraa_gpio_close(rotary);
