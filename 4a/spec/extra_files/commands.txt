@@ -160,3 +160,13 @@ git reset --hard origin/master
 https://linuxconfig.org/enable-ssh-root-login-on-debian-linux-server
 
 ssh debian@99.0.60.235 -p 22
+
+///pins///
+GPIO_51 62
+GPIO_50 60
+GPIO_117 71 
+GPIO_115 73
+https://www.seeed.cc/project_detail.html?id=1592
+
+
+

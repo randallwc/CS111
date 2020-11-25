@@ -6,3 +6,6 @@ version:
 	
 buzzer:
 	$(CC) $(CFLAG) -o buzzer buzzer.c
+
+button:
+	$(CC) $(CFLAG) -o gpio_interrupt gpio_interrupt.c
