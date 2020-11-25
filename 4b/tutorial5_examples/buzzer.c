@@ -1,5 +1,6 @@
 #include <signal.h>
 #include <mraa/gpio.h>
+#include <unistd.h>
 
 sig_atomic_t volatile run_flag = 1;
 
