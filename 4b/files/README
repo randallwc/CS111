@@ -1,0 +1,15 @@
+NAME: William Randall
+EMAIL: wrandall1000@gmail.com
+ID: 805167986
+
+I am letting Amrith Deepak use my beaglebone to run and debug his code.
+Amrith Deepak's uid is 105331462
+
+Files:
+lab4b.c 	... Source code file for temperature reading
+Makefile 	... Make file with 4 options
+README 		... This file
+lab_test.sh ... Test script file
+
+Source:
+https://wiki.seeedstudio.com/Grove-Temperature_Sensor_V1.2
