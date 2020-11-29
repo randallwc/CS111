@@ -2,7 +2,7 @@
 
 ./lab4b --log=test_output --scale=C & 
 pid=$!
-sleep 10
+sleep 5
 kill $pid
 
 tr " " "-" < test_output > translated_out
