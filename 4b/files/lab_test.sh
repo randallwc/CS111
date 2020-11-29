@@ -1,5 +1,5 @@
 #!/bin/bash
-./lab4b --log=test_output --scale=C --period=1.5 & 
+./lab4b --log=test_output --scale=C --period=1 & 
 pid=$!
 sleep 5
 kill $pid
@@ -12,7 +12,7 @@ rm -rf translated_out
 pass="PASS"
 #regex for each line
 #08:39:17 71.1
-regex="^[0-9]{2}:[0-9]{2}:[0-9]{2}-[0-9]+\.[0-9]{1}$"
+regex="^[[:digit:]]{2}:[0-9]{2}:[0-9]{2}-[0-9]+\.[0-9]{1}$"
 
 for line in $output
 do
