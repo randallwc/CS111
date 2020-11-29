@@ -61,6 +61,8 @@ int main(){
 	mraa_aio_context temp_sensor;
 	temp_sensor = mraa_aio_init(TEMP_PIN);
 
+	printf("1\n");
+
 	//read
 	int temp_reading = mraa_aio_read(temp_sensor);
 	float R = 1023.0/temp_reading-1.0;
