@@ -152,20 +152,15 @@ int main(int argc, char ** argv){
 	double temperature = get_temp(temp_reading, s_arg);
 
 	//time variables
-	time_t raw_time;
-	// struct tm last_time, current_time;
 	struct tm current_time;
 	time_t curr_t, last_t;
-	// int time_passed = 0; // check if time has passed since last loop
 
 	//start time
-	curr_t = time(& raw_time);
-	current_time = * localtime(& raw_time);
+	time(& curr_t);
+	current_time = * localtime(& curr_t);
 
 	//print first temperature reading
 	print_and_log(current_time.tm_hour, current_time.tm_min, current_time.tm_sec, temperature);
-	// int previous_seconds = current_time.tm_sec;
-	// last_time = current_time;
 	last_t = curr_t;
 
 	//poll
@@ -180,30 +175,18 @@ int main(int argc, char ** argv){
 		temperature = get_temp(temp_reading, s_arg);
 
 		//update time
-		curr_t = time(& raw_time);
-		current_time = * localtime(& raw_time);
-		// int time_now = current_time.tm_min * 60 + current_time.tm_sec;
-		// int time_prev = last_time.tm_min * 60 + last_time.tm_sec;
-		// time_passed = time_now - time_prev;
+		time(& curr_t);
+		current_time = * localtime(& curr_t);
 
 		//print if correct conditions
 		/**
 		run_flag is true
-		passed seconds is greater than 0
-		time passed is a multiple of the period
-		current time is not previous time
+		the difference between the current time and the last time is greater than the period
 		*/
-		// int can_print = run_flag 
-		// 	&& time_passed > 0 
-		// 	&& time_passed % p_arg == 0 
-		// 	&& current_time.tm_sec != previous_seconds;
-
 		int can_print = run_flag && (curr_t - last_t) >= p_arg;
 
 		if(can_print){
 			print_and_log(current_time.tm_hour, current_time.tm_min, current_time.tm_sec, temperature);
-			// previous_seconds = current_time.tm_sec;
-			// last_time = current_time;
 			last_t = curr_t;
 		}
 
@@ -323,8 +306,8 @@ int main(int argc, char ** argv){
 	}
 
 	//get final time
-	time(& raw_time);
-	current_time = * localtime(& raw_time);
+	time(& curr_t);
+	current_time = * localtime(& curr_t);
 
 	//print shutdown if not already printed
 	print_and_log(current_time.tm_hour, current_time.tm_min, current_time.tm_sec, -1.0);
