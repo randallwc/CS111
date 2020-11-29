@@ -11,7 +11,8 @@
 #include <poll.h> //poll
 #include <fcntl.h> //open //creat //F_SETFL
 #include <unistd.h> //close //fork //pipe
-#include <math.h> //
+#include <math.h> //log
+// #include <stdbool.h>
 
 //set up constants for pins
 const int TEMP_PIN = 1;
@@ -48,6 +49,7 @@ int read_length = 0;
 
 //helper functions
 double get_temp(int temp_reading, char scale);
+void print_and_log(int hour, int min, int sec, double temperature);
 
 //stdin arguments
 /**
@@ -102,7 +104,7 @@ int main(int argc, char ** argv){
 
 	//set up log file
 	if(l_flag && l_arg != NULL){
-		logfd = (l_arg, O_WRONLY | O_APPEND | O_CREAT, 0666);
+		logfd = open(l_arg, O_WRONLY | O_APPEND | O_CREAT, 0666);
 		if(logfd < 0){
 			fprintf(stderr, "error on log file\n");
 			exit(2);
@@ -183,7 +185,93 @@ int main(int argc, char ** argv){
 
 			//loop through each char in the read buffer
 			for(int i = 0; i < read_length; i++){
+				char * argument_value;
 
+				//find the \n or loop till length
+				while(i < read_length && read_buf[i] != '\n'){
+					i++;
+				}
+				//if there is no \n then break
+				if(i == read_length){
+					break;
+				}
+
+				//if found \n
+				if(read_buf[i] == '\n'){
+					//log everything in read buffer until this point
+					if(l_flag){
+						int write_length = write(logfd, &read_buf[previous_i], i - previous_i + 1);
+						if(write_length < 0){
+							fprintf(stderr, "error writing command to log file\n");
+							exit(1);
+						}
+						fsync(logfd);
+					}
+
+					//replace \n with end of string
+					read_buf[i] = '\0';
+
+					char* argument = read_buf + previous_i;
+
+					int is_scale 	= strcmp(argument, "SCALE=", 	6);
+					int is_period 	= strcmp(argument, "PERIOD=", 	7);
+					int is_log 		= strcmp(argument, "LOG", 		3);
+					int is_stop 	= strcmp(argument, "STOP"		 );
+					int is_start 	= strcmp(argument, "START"		 );
+					int is_off 		= strcmp(argument, "OFF"		 );
+
+					if(is_scale == 0){
+						//get the value
+						previous_i += 6;
+						argument_value = read_buf + previous_i;
+						if(strlen(argument_value) != 1){
+							fprintf(stderr, "incorrect use of scale\n");
+							exit(1);
+						}
+
+						int isC = strcmp(argument_value, "C");
+						int isF = strcmp(argument_value, "F");
+
+						if(isC == 0){
+							s_arg = 'C';
+						}
+						else if(isF == 0){
+							s_arg = 'F';
+						}
+						else{
+							fprintf(stderr, "incorrect use of scale must be C or F\n");
+							exit(1);
+						}
+					}
+					if(is_period == 0){
+						//get the value
+						previous_i += 7;
+						argument_value = read_buf + previous_i;
+
+						int input = atoi(argument_value);
+						if(input > 0){
+							p_arg = input;
+						}
+						else{
+							fprintf(stderr, "incorrect use of period\n");
+							exit(1);
+						}
+					}
+					if(is_log == 0){
+						//do nothing
+					}
+					if(is_stop == 0){
+						run_flag = 0;
+					}
+					if(is_start == 0){
+						run_flag = 1;
+					}
+					if(is_off == 0){
+						shutdown_flag = 1;
+						break;
+					}
+					previous_i = i + 1;
+				}
 			}
 		}
 
@@ -205,10 +293,16 @@ int main(int argc, char ** argv){
 		fprintf(stderr, "error closing sensor\n");
 		exit(3);
 	}
+
 	//close button
 	if(mraa_gpio_close(button) != MRAA_SUCCESS){
 		fprintf(stderr, "error closing button\n");
 		exit(3);
+	}
+
+	//close log
+	if(l_flag){
+		close(logfd);
 	}
 	return 0;
 }
@@ -236,7 +330,7 @@ double get_temp(int temp_reading, char scale){
 		return temperature_f;
 	}
 	else{
-		fprintf(stderr, "invalid use of scale\n");
+		fprintf(stderr, "invalid use of scale argument\n");
 		exit(1);
 		return -1;
 	}
