@@ -62,10 +62,16 @@ int main(){
 
 	//read
 	int temp_reading = mraa_aio_read(temp_sensor);
+
+	printf("2\n");
+
 	float R = 1023.0/temp_reading-1.0;
 	R *= R0;
 	float temperature_c = 1.0/(log(R/R0)/B+1.0/298.15)-273.15; // convert to temperature via datasheet
 	float temperature_f = temperature_c * (9.0/5.0) + 32.0;	//convert C to F
+
+	printf("3\n");
+
 	printf("temperature = %f %f", temperature_c, temperature_f);
 
 	//close sensors
