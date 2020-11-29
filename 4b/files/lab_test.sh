@@ -11,7 +11,7 @@ rm -rf test_output
 pass="PASS"
 #regex for each line
 #08:39:17 71.1
-regex="^\d{2}:\d{2}:\d{2} \d+\.\d{1}$"
+regex="^[[:digit:]] {2}:[[:digit:]] {2}:[[:digit:]] {2} [[:digit:]] +\.[[:digit:]] {1}$"
 
 for line in $(output)
 do
