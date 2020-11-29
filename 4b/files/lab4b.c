@@ -14,11 +14,8 @@
 #include <math.h> //
 
 //set up defines for pins
-#define A0_A1 1
-#define GPIO_50 60
-
-#define TEMP_PIN A0_A1
-#define BUTTON_PIN GPIO_50
+#define TEMP_PIN 1
+#define BUTTON_PIN 60
 
 //set up constants for temp reading
 const int B = 4275;		// B value of the thermistor
