@@ -38,10 +38,10 @@ int run_flag = 1;
 int shutdown_flag = 0;
 
 //argument variables
-int p_arg 		= 1;
+int p_arg		= 1;
 char s_arg		= 'F';
 char * l_arg	= NULL;
-int logfd 		= -1;
+int logfd		= -1;
 
 //buffers
 char read_buf[256] = {0};
