@@ -15,8 +15,8 @@
 // #include <stdbool.h>
 
 //set up constants for pins
-const int TEMP_PIN = 1;
-const int BUTTON_PIN  = 60;
+#define TEMP_PIN 1
+#define BUTTON_PIN 60
 
 //GLOBAL STRUCT
 static struct option arr_option[] =
@@ -36,12 +36,13 @@ int s_flag = 0;
 int l_flag = 0;
 int run_flag = 1;
 int shutdown_flag = 0;
+int SHUTDOWN_PRINTED = 0;
 
 //argument variables
-int p_arg 		= 1;
+int p_arg		= 1;
 char s_arg		= 'F';
 char * l_arg	= NULL;
-int logfd 		= -1;
+int logfd		= -1;
 
 //buffers
 char read_buf[256] = {0};
@@ -50,6 +51,7 @@ int read_length = 0;
 //helper functions
 double get_temp(int temp_reading, char scale);
 void print_and_log(int hour, int min, int sec, double temperature);
+void do_when_interrupted();
 
 //stdin arguments
 /**
@@ -86,6 +88,10 @@ int main(int argc, char ** argv){
 			case 'p':
 				p_flag = 1;
 				p_arg = atoi(optarg);
+				if(p_arg <= 0){
+					fprintf(stderr, "period must be greater than 0\n");
+					exit(1);
+				}
 				break;
 			case 's':
 				s_flag = 1;
@@ -129,8 +135,15 @@ int main(int argc, char ** argv){
 		exit(3);
 	}
 
-	if(mraa_gpio_dir(button, MRAA_GPIO_IN) != MRAA_SUCCESS){ // set button dir
+	// set button dir
+	if(mraa_gpio_dir(button, MRAA_GPIO_IN) != MRAA_SUCCESS){
 		fprintf(stderr, "button failed to set direction\n");
+		exit(3);
+	}
+
+	//set up button as interrupt
+	if(mraa_gpio_isr(button, MRAA_GPIO_EDGE_RISING, &do_when_interrupted, NULL) != MRAA_SUCCESS){
+		fprintf(stderr, "button failed to set as interrupt\n");
 		exit(3);
 	}
 
@@ -139,48 +152,62 @@ int main(int argc, char ** argv){
 	double temperature = get_temp(temp_reading, s_arg);
 
 	//time variables
-	time_t raw_time;
-	struct tm last_time, current_time;
-	int time_passed = 0; // check if time has passed since last loop
+	struct tm current_time;
+	time_t curr_t, last_t;
 
 	//start time
-	time(& raw_time);
-	current_time = * localtime(& raw_time);
+	time(& curr_t);
+	current_time = * localtime(& curr_t);
 
 	//print first temperature reading
 	print_and_log(current_time.tm_hour, current_time.tm_min, current_time.tm_sec, temperature);
-	int previous_seconds = current_time.tm_sec;
-	last_time = current_time;
+	last_t = curr_t;
 
 	//poll
-	struct pollfd poll_arr[1];
-	poll_arr[0].fd = 0;
-	poll_arr[0].events = POLLIN;
+	struct pollfd poll_stdin;
+	poll_stdin.fd = 0;
+	poll_stdin.events = POLLIN;
+	poll_stdin.revents = 0;
 
 	while(!shutdown_flag){
-		poll(poll_arr, 1, 0);
-
 		//update temperature
 		temp_reading = mraa_aio_read(sensor);
 		temperature = get_temp(temp_reading, s_arg);
 
 		//update time
-		time(& raw_time);
-		current_time = * localtime(& raw_time);
-		int time_now = current_time.tm_min * 60 + current_time.tm_sec;
-		int time_prev = last_time.tm_min * 60 + last_time.tm_sec;
-		time_passed = time_now - time_prev;
+		time(& curr_t);
+		current_time = * localtime(& curr_t);
 
 		//print if correct conditions
-		int can_print = run_flag && time_passed > 0 && time_passed % p_arg == 0 && current_time.tm_sec != previous_seconds;
+		/**
+		run_flag is true
+		the difference between the current time and the last time is greater than the period
+		*/
+		int can_print = run_flag && (curr_t - last_t) >= p_arg;
+
 		if(can_print){
 			print_and_log(current_time.tm_hour, current_time.tm_min, current_time.tm_sec, temperature);
-			previous_seconds = current_time.tm_sec;
-			last_time = current_time;
+			last_t = curr_t;
+		}
+
+		//if button was pressed then stop polling
+		if(mraa_gpio_read(button)){
+			shutdown_flag = 1;
 		}
 
 		//poll for input
-		if((poll_arr[0].revents & POLLIN) == POLLIN){
+		int poll_val = poll(&poll_stdin, 1, 0);
+
+		if(poll_val != 1){
+			continue;
+		}
+
+		if((poll_stdin.revents & POLLERR) == POLLERR){
+			fprintf(stderr, "error when polling\n");
+			exit(1);
+		}
+		
+		if((poll_stdin.revents & POLLIN) == POLLIN){
 			//read from STDIN
 			read_length = read(STDIN_FILENO, read_buf, 256);
 
@@ -216,13 +243,13 @@ int main(int argc, char ** argv){
 
 					char* argument = read_buf + previous_i;
 
-					int is_scale 	= strncmp(argument, "SCALE=", 	6);
-					int is_period 	= strncmp(argument, "PERIOD=", 	7);
-					int is_log 		= strncmp(argument, "LOG", 		3);
+					int is_scale 	= strncmp(argument, "SCALE=", 6);
+					int is_period 	= strncmp(argument, "PERIOD=", 7);
+					int is_log 		= strncmp(argument, "LOG", 3);
 
-					int is_stop 	= strcmp(argument, "STOP"		 );
-					int is_start 	= strcmp(argument, "START"		 );
-					int is_off 		= strcmp(argument, "OFF"		 );
+					int is_stop 	= strcmp(argument, "STOP");
+					int is_start 	= strcmp(argument, "START");
+					int is_off 		= strcmp(argument, "OFF");
 
 					if(is_scale == 0){
 						//get the value
@@ -253,13 +280,11 @@ int main(int argc, char ** argv){
 						argument_value = read_buf + previous_i;
 
 						int input = atoi(argument_value);
-						if(input > 0){
-							p_arg = input;
-						}
-						else{
-							fprintf(stderr, "incorrect use of period\n");
+						if(input <= 0){
+							fprintf(stderr, "incorrect use of period must be greater than 0\n");
 							exit(1);
 						}
+						p_arg = input;
 					}
 					if(is_log == 0){
 						//do nothing
@@ -278,18 +303,13 @@ int main(int argc, char ** argv){
 				}
 			}
 		}
-
-		//if button was pressed then stop polling
-		if(mraa_gpio_read(button)){
-			shutdown_flag = 1;
-		}
 	}
 
 	//get final time
-	time(& raw_time);
-	current_time = * localtime(& raw_time);
+	time(& curr_t);
+	current_time = * localtime(& curr_t);
 
-	//print shutdown
+	//print shutdown if not already printed
 	print_and_log(current_time.tm_hour, current_time.tm_min, current_time.tm_sec, -1.0);
 
 	//close sensor
@@ -341,14 +361,36 @@ double get_temp(int temp_reading, char scale){
 }
 
 void print_and_log(int hour, int min, int sec, double temperature){
-	if(shutdown_flag){
-		printf("%02d:%02d:%02d SHUTDOWN\n", hour, min, sec);
+	int return_value_pf = -1;
+	int return_value_dpf = -1;
+
+	//print shutdown
+	if(shutdown_flag && !SHUTDOWN_PRINTED){
+		return_value_pf = printf("%02d:%02d:%02d SHUTDOWN\n", hour, min, sec);
 		if(l_flag)
-			dprintf(logfd, "%02d:%02d:%02d SHUTDOWN\n", hour, min, sec);
+			return_value_dpf = dprintf(logfd, "%02d:%02d:%02d SHUTDOWN\n", hour, min, sec);
+		SHUTDOWN_PRINTED = 1;
 	}
-	else{
-		printf("%02d:%02d:%02d %.1f\n", hour, min, sec, temperature);
+
+	//print normally
+	else if(!SHUTDOWN_PRINTED){
+		return_value_pf = printf("%02d:%02d:%02d %.1f\n", hour, min, sec, temperature);
 		if(l_flag)
-			dprintf(logfd, "%02d:%02d:%02d %.1f\n", hour, min, sec, temperature);
+			return_value_dpf = dprintf(logfd, "%02d:%02d:%02d %.1f\n", hour, min, sec, temperature);
 	}
+
+	//check for errors
+	if(return_value_pf < 0){
+		fprintf(stderr, "error printing to stdout\n");
+		exit(1);
+	}
+
+	if(l_flag && return_value_dpf < 0){
+		fprintf(stderr, "error printing to log\n");
+		exit(1);
+	}
+}
+
+void do_when_interrupted(){
+	shutdown_flag = 1;
 }
