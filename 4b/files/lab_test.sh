@@ -18,6 +18,7 @@ do
 	if [[ $line =~  $regex]]
 	then
 		#is true
+		continue
 	else
 		#failed
 		pass="FAILED"
