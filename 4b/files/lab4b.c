@@ -153,17 +153,20 @@ int main(int argc, char ** argv){
 
 	//time variables
 	time_t raw_time;
-	struct tm last_time, current_time;
+	// struct tm last_time, current_time;
+	struct tm current_time;
+	time_t curr_t, last_t;
 	// int time_passed = 0; // check if time has passed since last loop
 
 	//start time
-	time(& raw_time);
+	curr_t = time(& raw_time);
 	current_time = * localtime(& raw_time);
 
 	//print first temperature reading
 	print_and_log(current_time.tm_hour, current_time.tm_min, current_time.tm_sec, temperature);
 	// int previous_seconds = current_time.tm_sec;
-	last_time = current_time;
+	// last_time = current_time;
+	last_t = curr_t;
 
 	//poll
 	struct pollfd poll_stdin;
@@ -177,7 +180,7 @@ int main(int argc, char ** argv){
 		temperature = get_temp(temp_reading, s_arg);
 
 		//update time
-		time(& raw_time);
+		curr_t = time(& raw_time);
 		current_time = * localtime(& raw_time);
 		// int time_now = current_time.tm_min * 60 + current_time.tm_sec;
 		// int time_prev = last_time.tm_min * 60 + last_time.tm_sec;
@@ -195,12 +198,13 @@ int main(int argc, char ** argv){
 		// 	&& time_passed % p_arg == 0 
 		// 	&& current_time.tm_sec != previous_seconds;
 
-		int can_print = run_flag && (current_time - last_time) >= p_arg;
+		int can_print = run_flag && (curr_t - last_t) >= p_arg;
 
 		if(can_print){
 			print_and_log(current_time.tm_hour, current_time.tm_min, current_time.tm_sec, temperature);
 			// previous_seconds = current_time.tm_sec;
-			last_time = current_time;
+			// last_time = current_time;
+			last_t = curr_t;
 		}
 
 		//if button was pressed then stop polling
