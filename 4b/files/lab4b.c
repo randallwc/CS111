@@ -55,7 +55,8 @@ OFF
 */
 
 
-int main(int argc, char ** argv){
+// int main(int argc, char ** argv){
+int main(){
 	//set up sensors
 	mraa_aio_context temp_sensor;
 	temp_sensor = mraa_aio_init(TEMP_PIN);
@@ -69,7 +70,7 @@ int main(int argc, char ** argv){
 	printf("temperature = %f %f", temperature_c, temperature_f);
 
 	//close sensors
-	mraa_aio_close(rotary);
+	mraa_aio_close(temp_sensor);
 	return 0;
 }
 
