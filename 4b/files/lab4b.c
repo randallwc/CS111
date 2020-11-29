@@ -55,15 +55,17 @@ OFF
 // int main(int argc, char ** argv){
 int main(){
 	//set up sensors
-	mraa_aio_context sensor, button;
-
+	mraa_aio_context sensor;
 	sensor = mraa_aio_init(TEMP_PIN);
-	button = mraa_gpio_init(BUTTON_PIN);
-
-	mraa_gpio_dir(button, MRAA_GPIO_IN);
 	mraa_gpio_dir(sensor, MRAA_GPIO_IN);
 
 	printf("1\n");
+
+	mraa_gpio_context button;
+	button = mraa_gpio_init(BUTTON_PIN);
+	mraa_gpio_dir(button, MRAA_GPIO_IN);
+
+	printf("1.1\n");
 
 	//read
 	int temp_reading = mraa_aio_read(sensor);
