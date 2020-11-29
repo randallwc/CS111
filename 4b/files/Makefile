@@ -13,7 +13,7 @@ default: $(NAME).c
 
 check: default lab_test.sh
 	chmod +x lab_test.sh
-	lab_test.sh > out
+	./lab_test.sh
 
 clean:
 	rm -f $(NAME)
