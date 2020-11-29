@@ -383,7 +383,7 @@ void print_and_log(int hour, int min, int sec, double temperature){
 
 	//print shutdown
 	if(shutdown_flag && !SHUTDOWN_PRINTED){
-		return_value = printf("%02d:%02d:%02d SHUTDOWN\n", hour, min, sec);
+		return_value_pf = printf("%02d:%02d:%02d SHUTDOWN\n", hour, min, sec);
 		if(l_flag)
 			return_value_dpf = dprintf(logfd, "%02d:%02d:%02d SHUTDOWN\n", hour, min, sec);
 		SHUTDOWN_PRINTED = 1;
