@@ -12,8 +12,7 @@ default: $(NAME).c
 	$(CC) $(CFLAGS) -o $(NAME) $(NAME).c
 
 check: default lab_test.sh
-	chmod +x lab_test.sh
-	./lab_test.sh
+	bash lab_test.sh
 
 clean:
 	rm -f $(NAME)
