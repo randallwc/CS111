@@ -78,7 +78,6 @@ void print_and_log(int hour, int min, int sec, double temperature);
 
 
 int main(int argc, char ** argv){
-
 	int ind = 0;
 	int ch = 0;
 	//argument parsing
@@ -155,6 +154,8 @@ int main(int argc, char ** argv){
 	struct pollfd poll_arr[1];
 	poll_arr[0].fd = 0;
 	poll_arr[0].events = POLLIN;
+
+	printf("ckpoint 1");
 
 	while(!shutdown_flag){
 		poll(poll_arr, 1, 0);
