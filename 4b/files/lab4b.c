@@ -54,13 +54,14 @@ OFF
 
 // int main(int argc, char ** argv){
 int main(){
-	//set up sensors
+	//set up sensor
 	mraa_aio_context sensor;
 	sensor = mraa_aio_init(TEMP_PIN);
 	mraa_gpio_dir(sensor, MRAA_GPIO_IN);
 
 	printf("1\n");
 
+	//set up button
 	mraa_gpio_context button;
 	button = mraa_gpio_init(BUTTON_PIN);
 	mraa_gpio_dir(button, MRAA_GPIO_IN);
@@ -81,8 +82,10 @@ int main(){
 
 	printf("temperature = %f %f", temperature_c, temperature_f);
 
-	//close sensors
+	//close sensor
 	mraa_aio_close(sensor);
+	//close button
+	mraa_gpio_close(button);
 	return 0;
 }
 
