@@ -76,8 +76,12 @@ void print_and_log(int hour, int min, int sec, double temperature);
 //"17:25:58 98.6\n"
 //write to fd 1
 
+int ckpnt = 1;
+
 
 int main(int argc, char ** argv){
+	printf("ckpoint %d", ckpnt++);
+
 	int ind = 0;
 	int ch = 0;
 	//argument parsing
@@ -101,6 +105,8 @@ int main(int argc, char ** argv){
 		}
 	}
 
+	printf("ckpoint %d", ckpnt++);
+
 	//set up log file
 	if(l_flag && l_arg != NULL){
 		logfd = open(l_arg, O_WRONLY | O_APPEND | O_CREAT, 0666);
@@ -109,6 +115,8 @@ int main(int argc, char ** argv){
 			exit(2);
 		}
 	}
+
+	printf("ckpoint %d", ckpnt++);
 
 	//sensor initialization
 	mraa_aio_context sensor;
@@ -119,6 +127,8 @@ int main(int argc, char ** argv){
 		exit(3);
 	}
 
+	printf("ckpoint %d", ckpnt++);
+
 	//button initialization
 	mraa_gpio_context button;
 	button = mraa_gpio_init(BUTTON_PIN);
@@ -127,35 +137,48 @@ int main(int argc, char ** argv){
 		fprintf(stderr, "button failed to initialize\n");
 		exit(3);
 	}
+
+	printf("ckpoint %d", ckpnt++);
+
 	if(mraa_gpio_dir(button, MRAA_GPIO_IN) != MRAA_SUCCESS){ // set button dir
 		fprintf(stderr, "button failed to set direction\n");
 		exit(3);
 	}
 
+	printf("ckpoint %d", ckpnt++);
+
 	//get initial temp
 	int temp_reading = mraa_aio_read(sensor);
 	double temperature = get_temp(temp_reading, s_arg);
+
+	printf("ckpoint %d", ckpnt++);
 
 	//time variables
 	time_t raw_time;
 	struct tm last_time, current_time;
 	int time_passed = 0; // check if time has passed since last loop
 
+	printf("ckpoint %d", ckpnt++);
+
 	//start time
 	time(& raw_time);
 	current_time = * localtime(& raw_time);
+
+	printf("ckpoint %d", ckpnt++);
 
 	//print first temperature reading
 	print_and_log(current_time.tm_hour, current_time.tm_min, current_time.tm_sec, temperature);
 	int previous_seconds = current_time.tm_sec;
 	last_time = current_time;
 
+	printf("ckpoint %d", ckpnt++);
+
 	//poll
 	struct pollfd poll_arr[1];
 	poll_arr[0].fd = 0;
 	poll_arr[0].events = POLLIN;
 
-	printf("ckpoint 1");
+	printf("ckpoint %d", ckpnt++);
 
 	while(!shutdown_flag){
 		poll(poll_arr, 1, 0);
