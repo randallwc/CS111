@@ -111,8 +111,7 @@ int main(int argc, char ** argv){
 	mraa_gpio_context button = mraa_gpio_init(BUTTON_PIN);
 	mraa_gpio_dir(button, MRAA_GPIO_IN);
 
-
-
+	
 
 	//close sensor
 	if(mraa_aio_close(sensor) != MRAA_SUCCESS){
