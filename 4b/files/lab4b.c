@@ -148,7 +148,7 @@ int main(int argc, char ** argv){
 
 	//print first temperature reading
 	print_and_log(current_time.tm_hour, current_time.tm_min, current_time.tm_sec, temperature);
-	unsigned int previous_seconds = current_time.tm_sec;
+	int previous_seconds = current_time.tm_sec;
 	last_time = current_time;
 
 	//poll
@@ -166,8 +166,8 @@ int main(int argc, char ** argv){
 		//update time
 		time(& raw_time);
 		current_time = * localtime(& raw_time);
-		int time_now = current_time.tm_min * 60 + current_time.tm_sec
-		int time_prev = last_time.tm_min * 60 + last_time.tm_sec
+		int time_now = current_time.tm_min * 60 + current_time.tm_sec;
+		int time_prev = last_time.tm_min * 60 + last_time.tm_sec;
 		time_passed = time_now - time_prev;
 
 		//print if correct conditions
@@ -184,7 +184,9 @@ int main(int argc, char ** argv){
 			read_length = read(STDIN_FILENO, read_buf, 256);
 
 			//loop through each char in the read buffer
-			for(int i = 0; i < read_length; i++){
+			int i = 0;
+			int previous_i = 0;
+			for(i = 0; i < read_length; i++){
 				char * argument_value;
 
 				//find the \n or loop till length
@@ -213,9 +215,10 @@ int main(int argc, char ** argv){
 
 					char* argument = read_buf + previous_i;
 
-					int is_scale 	= strcmp(argument, "SCALE=", 	6);
-					int is_period 	= strcmp(argument, "PERIOD=", 	7);
-					int is_log 		= strcmp(argument, "LOG", 		3);
+					int is_scale 	= strncmp(argument, "SCALE=", 	6);
+					int is_period 	= strncmp(argument, "PERIOD=", 	7);
+					int is_log 		= strncmp(argument, "LOG", 		3);
+
 					int is_stop 	= strcmp(argument, "STOP"		 );
 					int is_start 	= strcmp(argument, "START"		 );
 					int is_off 		= strcmp(argument, "OFF"		 );
@@ -340,11 +343,11 @@ void print_and_log(int hour, int min, int sec, double temperature){
 	if(shutdown_flag){
 		printf("%02d:%02d:%02d SHUTDOWN\n", hour, min, sec);
 		if(l_flag)
-			dprintf(log, "%02d:%02d:%02d SHUTDOWN\n", hour, min, sec);
+			dprintf(logfd, "%02d:%02d:%02d SHUTDOWN\n", hour, min, sec);
 	}
 	else{
 		printf("%02d:%02d:%02d %.1f\n", hour, min, sec, temperature);
 		if(l_flag)
-			dprintf(log, "%02d:%02d:%02d %.1f\n", hour, min, sec, temperature);
+			dprintf(logfd, "%02d:%02d:%02d %.1f\n", hour, min, sec, temperature);
 	}
 }
