@@ -120,7 +120,13 @@ int main(int argc, char ** argv){
 
 	//sensor initialization
 	mraa_aio_context sensor;
+
+	printf("checkpoint: %d\n", ckpnt++);
+
 	sensor = mraa_aio_init(TEMP_PIN);
+
+	printf("checkpoint: %d\n", ckpnt++);
+	
 	if(sensor == NULL){
 		mraa_deinit();
 		fprintf(stderr, "temperature sensor failed to initialize\n");
