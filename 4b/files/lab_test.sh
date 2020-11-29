@@ -15,13 +15,11 @@ regex="^[0-9]{2}:[0-9]{2}:[0-9]{2} [0-9]+\.[0-9]{1}$"
 
 for line in $(output)
 do
-	if [[ $line =~  $regex]]
+	if [[ $line =~  $regex ]]
 	then
-		#is true
-		continue
+		continue #is true
 	else
-		#failed
-		pass="FAILED"
+		pass="FAILED" #failed
 	fi
 done
 
