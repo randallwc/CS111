@@ -1,6 +1,7 @@
 #!/bin/bash
 
-./lab4b --log=test_output --scale=C & pid=$!
+./lab4b --log=test_output --scale=C & 
+pid=$!
 sleep 10
 kill $pid
 
