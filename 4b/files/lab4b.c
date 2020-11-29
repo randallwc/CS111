@@ -119,7 +119,7 @@ int main(int argc, char ** argv){
 	printf("checkpoint: %d\n", ckpnt++);//3
 
 	//sensor initialization
-	mraa_aio_context sensor = mraa_aio_init(1);
+	mraa_aio_context sensor = mraa_aio_init(TEMP_PIN);
 
 	printf("checkpoint: %d\n", ckpnt++);//4
 
