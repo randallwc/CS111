@@ -13,7 +13,7 @@ pass="PASS"
 #08:39:17 71.1
 regex="^[0-9]{2}:[0-9]{2}:[0-9]{2} [0-9]+\.[0-9]{1}$"
 
-for line in $(output)
+for line in $output
 do
 	if [[ $line =~  $regex ]]
 	then
