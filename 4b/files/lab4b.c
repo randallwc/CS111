@@ -76,11 +76,7 @@ void print_and_log(int hour, int min, int sec, double temperature);
 //"17:25:58 98.6\n"
 //write to fd 1
 
-int ckpnt = 1;
-
-
 int main(int argc, char ** argv){
-	printf("checkpoint: %d\n", ckpnt++);//1
 
 	int ind = 0;
 	int ch = 0;
@@ -105,8 +101,6 @@ int main(int argc, char ** argv){
 		}
 	}
 
-	printf("checkpoint: %d\n", ckpnt++);//2
-
 	//set up log file
 	if(l_flag && l_arg != NULL){
 		logfd = open(l_arg, O_WRONLY | O_APPEND | O_CREAT, 0666);
@@ -116,20 +110,15 @@ int main(int argc, char ** argv){
 		}
 	}
 
-	printf("checkpoint: %d\n", ckpnt++);//3
-
 	//sensor initialization
-	mraa_aio_context sensor = mraa_aio_init(TEMP_PIN);
-
-	printf("checkpoint: %d\n", ckpnt++);//4
+	mraa_aio_context sensor;
+	sensor = mraa_aio_init(TEMP_PIN);
 
 	if(sensor == NULL){
 		mraa_deinit();
 		fprintf(stderr, "temperature sensor failed to initialize\n");
 		exit(3);
 	}
-
-	printf("checkpoint: %d\n", ckpnt++);//5
 
 	//button initialization
 	mraa_gpio_context button;
@@ -140,47 +129,33 @@ int main(int argc, char ** argv){
 		exit(3);
 	}
 
-	printf("checkpoint: %d\n", ckpnt++);//6
-
 	if(mraa_gpio_dir(button, MRAA_GPIO_IN) != MRAA_SUCCESS){ // set button dir
 		fprintf(stderr, "button failed to set direction\n");
 		exit(3);
 	}
 
-	printf("checkpoint: %d\n", ckpnt++);//7
-
 	//get initial temp
 	int temp_reading = mraa_aio_read(sensor);
 	double temperature = get_temp(temp_reading, s_arg);
-
-	printf("checkpoint: %d\n", ckpnt++);//8
 
 	//time variables
 	time_t raw_time;
 	struct tm last_time, current_time;
 	int time_passed = 0; // check if time has passed since last loop
 
-	printf("checkpoint: %d\n", ckpnt++);//9
-
 	//start time
 	time(& raw_time);
 	current_time = * localtime(& raw_time);
-
-	printf("checkpoint: %d\n", ckpnt++);//10
 
 	//print first temperature reading
 	print_and_log(current_time.tm_hour, current_time.tm_min, current_time.tm_sec, temperature);
 	int previous_seconds = current_time.tm_sec;
 	last_time = current_time;
 
-	printf("checkpoint: %d\n", ckpnt++);//11
-
 	//poll
 	struct pollfd poll_arr[1];
 	poll_arr[0].fd = 0;
 	poll_arr[0].events = POLLIN;
-
-	printf("checkpoint: %d\n", ckpnt++);//12
 
 	while(!shutdown_flag){
 		poll(poll_arr, 1, 0);
