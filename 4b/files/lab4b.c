@@ -15,8 +15,8 @@
 // #include <stdbool.h>
 
 //set up constants for pins
-const int TEMP_PIN = 1;
-const int BUTTON_PIN  = 60;
+#define TEMP_PIN 1
+#define BUTTON_PIN 60
 
 //GLOBAL STRUCT
 static struct option arr_option[] =
