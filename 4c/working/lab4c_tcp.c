@@ -22,7 +22,6 @@
 #define TEMP_PIN 1
 // #define BUTTON_PIN 60
 //set up constants for server
-int id = 111111111;
 int port = 18000;
 
 //GLOBAL STRUCT
@@ -55,7 +54,7 @@ char s_arg      = 'F';
 char * l_arg    = NULL;
 int logfd       = -1;
 char * h_arg    = NULL;
-int i_arg       = id;
+int i_arg       = 111111111;
 
 
 //buffers
@@ -145,7 +144,7 @@ int main(int argc, char ** argv){
                     exit(1);
                 }
                 break;
-            casee 'i':
+            case 'i':
                 i_flag = 1;
                 i_arg = atoi(optarg);
                 if((floor(log10(abs(id))) + 1) != 9){
@@ -193,7 +192,7 @@ int main(int argc, char ** argv){
     struct hostent * server_ip_address = gethostbyname(h_arg);
     //copy over the s_addr from the server entity
     memcpy(
-        (char *)(&saddr.sin_addr.s_addr), 
+        (char *)(&socket_address.sin_addr.s_addr), 
         (char *)(server_ip_address->h_addr), 
         server_ip_address->h_length
     );
@@ -206,9 +205,9 @@ int main(int argc, char ** argv){
     }
 
     //send the id
-    dprintf(sockfd, "ID=%i\n", id);
+    dprintf(sockfd, "ID=%i\n", i_arg);
     if(l_flag){
-        int return_value_dpf = dprintf(logfd, "ID=%i\n", id);
+        int return_value_dpf = dprintf(logfd, "ID=%i\n", i_arg);
         if(return_value_dpf < 0){
             fprintf(stderr, "error printing to log\n");
             exit(1);
