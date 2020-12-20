@@ -14,7 +14,7 @@
 #include <unistd.h> //close //fork //pipe
 #include <math.h> //log
 
-#include <sys/types.h>
+// #include <sys/types.h>
 #include <sys/socket.h> //socket
 #include <netdb.h>
 
@@ -271,7 +271,7 @@ int main(int argc, char ** argv){
 
         if((poll_sock.revents & POLLERR) == POLLERR){
             fprintf(stderr, "error when polling\n");
-            exit(1);
+            exit(2);
         }
         
         if((poll_sock.revents & POLLIN) == POLLIN){
@@ -382,14 +382,8 @@ int main(int argc, char ** argv){
     //close sensor
     if(mraa_aio_close(sensor) != MRAA_SUCCESS){
         fprintf(stderr, "error closing sensor\n");
-        exit(3);
+        exit(2);
     }
-
-    // //close button
-    // if(mraa_gpio_close(button) != MRAA_SUCCESS){
-    //     fprintf(stderr, "error closing button\n");
-    //     exit(3);
-    // }
 
     //close log
     if(l_flag){
@@ -435,8 +429,7 @@ void print_and_log(int hour, int min, int sec, double temperature){
     int return_value_pf = -1;
     int return_value_dpf = -1;
     int return_value_spf = -1;
-
-    return_value_spf = sprintf(logBuffer, "%02d:%02d:%02d %.1f\n", hour, min, sec, temperature);
+    int entered = 0;
 
     //print shutdown
     if(shutdown_flag && !SHUTDOWN_PRINTED){
@@ -445,26 +438,29 @@ void print_and_log(int hour, int min, int sec, double temperature){
         if(l_flag)
             return_value_dpf = write(logfd,logBuffer, strlen(logBuffer));
         SHUTDOWN_PRINTED = 1;
+        entered = 1;
     }
 
     //print normally
     else if(!SHUTDOWN_PRINTED){
+        return_value_spf = sprintf(logBuffer, "%02d:%02d:%02d %.1f\n", hour, min, sec, temperature);
         return_value_pf = write(sockfd,logBuffer, strlen(logBuffer));
         if(l_flag)
             return_value_dpf = write(logfd,logBuffer, strlen(logBuffer));
+        entered = 1;
     }
 
     //check for errors
-    if(return_value_spf < 0){
+    if(return_value_spf < 0 && entered){
         fprintf(stderr, "error storing string in buffer\n");
         exit(2);
     }
-    if(return_value_pf < 0){
+    if(return_value_pf < 0 && entered){
         fprintf(stderr, "error printing to socket\n");
         exit(2);
     }
 
-    if(l_flag && return_value_dpf < 0){
+    if(l_flag && return_value_dpf < 0 && entered){
         fprintf(stderr, "error printing to log\n");
         exit(2);
     }
