@@ -73,6 +73,7 @@ int sockfd = -1;
 double get_temp(int temp_reading, char scale);
 void print_and_log(int hour, int min, int sec, double temperature);
 void do_when_interrupted();
+void check_id(int val);
 
 //stdin arguments
 /**
@@ -504,4 +505,19 @@ void print_and_log(int hour, int min, int sec, double temperature){
 
 void do_when_interrupted(){
     shutdown_flag = 1;
+}
+
+void check_id(int val){
+    int number = 0;
+    while(val > 0){
+        val /= 10;
+        number++;
+    }
+    if(number == 9){
+        return;
+    }
+    else{
+        fprintf(stderr, "id is not 9 digits\n");
+        exit(1);
+    }
 }
