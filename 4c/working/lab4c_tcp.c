@@ -147,7 +147,12 @@ int main(int argc, char ** argv){
             case 'i':
                 i_flag = 1;
                 i_arg = atoi(optarg);
-                if((floor(log10(abs(id))) + 1) != 9){
+                if(
+                    floor(
+                        log10(
+                            abs(i_arg)
+                            ) + 1
+                        ) != 9){
                     fprintf(stderr, "id must be 9 digits long\n");
                     exit(1);
                 }
