@@ -113,7 +113,7 @@ int main(int argc, char ** argv){
                 s_flag = 1;
                 //check if len==1
                 if(strlen(optarg) != 1){
-                    fprintf(stderr, "incorrect usage: lab4b [--period=#] [--scale=C|F] [--log=filename] [----id=9-digit-number] [--host=name or address]\n");
+                    fprintf(stderr, "incorrect usage: lab4b [--period=#] [--scale=C|F] [--log=filename] [--id=9-digit-number] [--host=name or address]\n");
                     exit(1);
                 }
                 //check if F or C
@@ -124,7 +124,7 @@ int main(int argc, char ** argv){
                     s_arg = *optarg;
                 }
                 else{
-                    fprintf(stderr, "incorrect usage: lab4b [--period=#] [--scale=C|F] [--log=filename] [----id=9-digit-number] [--host=name or address]\n");
+                    fprintf(stderr, "incorrect usage: lab4b [--period=#] [--scale=C|F] [--log=filename] [--id=9-digit-number] [--host=name or address]\n");
                     exit(1);
                 }
                 break;
@@ -157,7 +157,7 @@ int main(int argc, char ** argv){
                     exit(1);
                 }
             default:
-                fprintf(stderr, "incorrect usage: lab4b [--period=#] [--scale=C|F] [--log=filename] [----id=9-digit-number] [--host=name or address]\n");
+                fprintf(stderr, "incorrect usage: lab4b [--period=#] [--scale=C|F] [--log=filename] [--id=9-digit-number] [--host=name or address]\n");
                 exit(1);
         }
     }
@@ -167,7 +167,7 @@ int main(int argc, char ** argv){
         port = atoi(argv[optind]);
     }
     else{
-        fprintf(stderr, "no port number: incorrect usage: lab4b [--period=#] [--scale=C|F] [--log=filename] [----id=9-digit-number] [--host=name or address]\n");
+        fprintf(stderr, "no port number: incorrect usage: lab4b [--period=#] [--scale=C|F] [--log=filename] [--id=9-digit-number] [--host=name or address]\n");
         exit(1);
     }
 
