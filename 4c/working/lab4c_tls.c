@@ -63,7 +63,7 @@ int i_arg       = 111111111;
 
 //buffers
 char read_buf[256] = {0};
-char sendBuf[32];
+char send_buf[32];
 int read_length = 0;
 
 //socket
@@ -230,7 +230,7 @@ int main(int argc, char ** argv){
     }
 
     //send the id
-    if (sprintf(send_buf, "ID=%d\n", id) < 0){
+    if (sprintf(send_buf, "ID=%d\n", i_arg) < 0){
         fprintf(stderr, "error storing string in buffer\n");
         exit(1);
     }
@@ -462,7 +462,7 @@ double get_temp(int temp_reading, char scale){
 
 void print_and_log(int hour, int min, int sec, double temperature){
     char logBuffer[32];
-    int return_value_pf = -1;
+    // int return_value_pf = -1;
     int return_value_dpf = -1;
     int return_value_spf = -1;
     int entered = 0;
