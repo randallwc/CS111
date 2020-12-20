@@ -100,7 +100,6 @@ int main(int argc, char ** argv){
     int ch = 0;
     //argument parsing
     while ( (ch = getopt_long(argc, argv, "p:s:l:i:h:", arr_option, &ind) ) != -1){
-        fprintf(stderr,"%c\n",ch);
         switch (ch){
             case 'p':
                 p_flag = 1;
@@ -154,7 +153,6 @@ int main(int argc, char ** argv){
                 exit(1);
         }
     }
-
     //set up port number
     if(optind < argc){
         port = atoi(argv[optind]);
@@ -184,7 +182,7 @@ int main(int argc, char ** argv){
     struct sockaddr_in socket_address;
     bzero((char *) &socket_address, sizeof(socket_address));
     socket_address.sin_family = AF_INET;
-    socket_address.sin_port = htons(p_arg);
+    socket_address.sin_port = htons(port);
 
     //get the server ip address
     struct hostent * server_ip_address = gethostbyname(h_arg);
@@ -195,9 +193,8 @@ int main(int argc, char ** argv){
         server_ip_address->h_length
     );
 
-    //connect to the server
     //connect to server
-    if (connect(sockfd, (struct sockaddr *)&socket_address, sizeof(socket_address)) < 0){
+    if (connect(sockfd, (struct sockaddr *)&socket_address, sizeof(socket_address)) == -1){
         fprintf(stderr, "error with connect\n");
         exit(2);
     }
@@ -279,7 +276,7 @@ int main(int argc, char ** argv){
         
         if((poll_sock.revents & POLLIN) == POLLIN){
             //read from STDIN
-            read_length = read(STDIN_FILENO, read_buf, 256);
+            read_length = read(sockfd, read_buf, 256);
 
             //loop through each char in the read buffer
             int i = 0;
@@ -434,33 +431,46 @@ double get_temp(int temp_reading, char scale){
 }
 
 void print_and_log(int hour, int min, int sec, double temperature){
+    char logBuffer[32];
     int return_value_pf = -1;
     int return_value_dpf = -1;
+    int return_value_spf = -1;
+
+    return_value_spf = sprintf(logBuffer, "%02d:%02d:%02d %.1f\n", hour, min, sec, temperature);
 
     //print shutdown
     if(shutdown_flag && !SHUTDOWN_PRINTED){
-        return_value_pf = dprintf(sockfd,"%02d:%02d:%02d SHUTDOWN\n", hour, min, sec);
+        return_value_spf = sprintf(logBuffer, "%02d:%02d:%02d SHUTDOWN\n", hour, min, sec);
+        return_value_pf = write(sockfd,logBuffer, strlen(logBuffer));
+        // return_value_pf = dprintf(sockfd,"%02d:%02d:%02d SHUTDOWN\n", hour, min, sec);
         if(l_flag)
-            return_value_dpf = dprintf(logfd, "%02d:%02d:%02d SHUTDOWN\n", hour, min, sec);
+            return_value_dpf = write(logfd,logBuffer, strlen(logBuffer));
+            // return_value_dpf = dprintf(logfd, "%02d:%02d:%02d SHUTDOWN\n", hour, min, sec);
         SHUTDOWN_PRINTED = 1;
     }
 
     //print normally
     else if(!SHUTDOWN_PRINTED){
-        return_value_pf = dprintf(sockfd,"%02d:%02d:%02d %.1f\n", hour, min, sec, temperature);
+        return_value_pf = write(sockfd,logBuffer, strlen(logBuffer));
+        // return_value_pf = dprintf(sockfd,"%02d:%02d:%02d %.1f\n", hour, min, sec, temperature);
         if(l_flag)
-            return_value_dpf = dprintf(logfd, "%02d:%02d:%02d %.1f\n", hour, min, sec, temperature);
+            return_value_dpf = write(logfd,logBuffer, strlen(logBuffer));
+            // return_value_dpf = dprintf(logfd, "%02d:%02d:%02d %.1f\n", hour, min, sec, temperature);
     }
 
     //check for errors
+    if(return_value_spf < 0){
+        fprintf(stderr, "error storing string in buffer\n");
+        exit(2);
+    }
     if(return_value_pf < 0){
         fprintf(stderr, "error printing to socket\n");
-        exit(1);
+        exit(2);
     }
 
     if(l_flag && return_value_dpf < 0){
         fprintf(stderr, "error printing to log\n");
-        exit(1);
+        exit(2);
     }
 }
 
