@@ -111,7 +111,7 @@ int main(int argc, char ** argv){
                 p_flag = 1;
                 p_arg = atoi(optarg);
                 if(p_arg <= 0){
-                    fprintf(stderr, "period must be greater than 0\n");
+                    fprintf(stderr, "incorrect usage period must be greater than 0\n");
                     exit(1);
                 }
                 break;
@@ -234,14 +234,14 @@ int main(int argc, char ** argv){
     //send the id
     if (sprintf(send_buf, "ID=%d\n", i_arg) < 0){
         fprintf(stderr, "error storing string in buffer\n");
-        exit(1);
+        exit(2);
     }
     SSL_write(ssl, send_buf, strlen(send_buf));
     if(l_flag){
         int return_value_dpf = write(logfd, send_buf, strlen(send_buf));
         if(return_value_dpf < 0){
             fprintf(stderr, "error printing to log\n");
-            exit(1);
+            exit(2);
         }
     }
 

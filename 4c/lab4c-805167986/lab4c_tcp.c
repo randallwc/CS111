@@ -107,7 +107,7 @@ int main(int argc, char ** argv){
                 p_flag = 1;
                 p_arg = atoi(optarg);
                 if(p_arg <= 0){
-                    fprintf(stderr, "period must be greater than 0\n");
+                    fprintf(stderr, "incorrect usage period must be greater than 0\n");
                     exit(1);
                 }
                 break;
@@ -203,30 +203,20 @@ int main(int argc, char ** argv){
         exit(2);
     }
 
-    // //send the id
-    // dprintf(sockfd, "ID=%i\n", i_arg);
-    // if(l_flag){
-    //     int return_value_dpf = dprintf(logfd, "ID=%i\n", i_arg);
-    //     if(return_value_dpf < 0){
-    //         fprintf(stderr, "error printing to log\n");
-    //         exit(2);
-    //     }
-    // }
-
     //send the id
     if (sprintf(send_buf, "ID=%d\n", i_arg) < 0){
         fprintf(stderr, "error storing string in buffer\n");
-        exit(1);
+        exit(2);
     }
     if (write(sockfd, send_buf, strlen(send_buf)) < 0){
         fprintf(stderr, "error printing id\n");
-        exit(1);
+        exit(2);
     }
     if(l_flag){
         int return_value_dpf = write(logfd, send_buf, strlen(send_buf));
         if(return_value_dpf < 0){
             fprintf(stderr, "error printing to log\n");
-            exit(1);
+            exit(2);
         }
     }
 
@@ -501,7 +491,7 @@ void check_id(int val){
         return;
     }
     else{
-        fprintf(stderr, "id is not 9 digits\n");
+        fprintf(stderr, "incorrect use id is not 9 digits\n");
         exit(1);
     }
 }
