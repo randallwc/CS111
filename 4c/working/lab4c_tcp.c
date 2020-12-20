@@ -442,20 +442,16 @@ void print_and_log(int hour, int min, int sec, double temperature){
     if(shutdown_flag && !SHUTDOWN_PRINTED){
         return_value_spf = sprintf(logBuffer, "%02d:%02d:%02d SHUTDOWN\n", hour, min, sec);
         return_value_pf = write(sockfd,logBuffer, strlen(logBuffer));
-        // return_value_pf = dprintf(sockfd,"%02d:%02d:%02d SHUTDOWN\n", hour, min, sec);
         if(l_flag)
             return_value_dpf = write(logfd,logBuffer, strlen(logBuffer));
-            // return_value_dpf = dprintf(logfd, "%02d:%02d:%02d SHUTDOWN\n", hour, min, sec);
         SHUTDOWN_PRINTED = 1;
     }
 
     //print normally
     else if(!SHUTDOWN_PRINTED){
         return_value_pf = write(sockfd,logBuffer, strlen(logBuffer));
-        // return_value_pf = dprintf(sockfd,"%02d:%02d:%02d %.1f\n", hour, min, sec, temperature);
         if(l_flag)
             return_value_dpf = write(logfd,logBuffer, strlen(logBuffer));
-            // return_value_dpf = dprintf(logfd, "%02d:%02d:%02d %.1f\n", hour, min, sec, temperature);
     }
 
     //check for errors
