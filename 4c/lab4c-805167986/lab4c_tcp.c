@@ -59,6 +59,7 @@ int i_arg       = 111111111;
 
 //buffers
 char read_buf[256] = {0};
+char send_buf[32];
 int read_length = 0;
 
 //socket
@@ -202,13 +203,30 @@ int main(int argc, char ** argv){
         exit(2);
     }
 
+    // //send the id
+    // dprintf(sockfd, "ID=%i\n", i_arg);
+    // if(l_flag){
+    //     int return_value_dpf = dprintf(logfd, "ID=%i\n", i_arg);
+    //     if(return_value_dpf < 0){
+    //         fprintf(stderr, "error printing to log\n");
+    //         exit(2);
+    //     }
+    // }
+
     //send the id
-    dprintf(sockfd, "ID=%i\n", i_arg);
+    if (sprintf(send_buf, "ID=%d\n", i_arg) < 0){
+        fprintf(stderr, "error storing string in buffer\n");
+        exit(1);
+    }
+    if (write(sockfd, send_buf, strlen(send_buf)) < 0){
+        fprintf(stderr, "error printing id\n");
+        exit(1);
+    }
     if(l_flag){
-        int return_value_dpf = dprintf(logfd, "ID=%i\n", i_arg);
+        int return_value_dpf = write(logfd, send_buf, strlen(send_buf));
         if(return_value_dpf < 0){
             fprintf(stderr, "error printing to log\n");
-            exit(2);
+            exit(1);
         }
     }
 
