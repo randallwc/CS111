@@ -148,7 +148,7 @@ int main(int argc, char ** argv){
             case 'i':
                 i_flag = 1;
                 i_arg = atoi(optarg);
-                check_id(i_val);
+                check_id(i_arg);
                 break;
             default:
                 fprintf(stderr, "incorrect usage: lab4b [--period=#] [--scale=C|F] [--log=filename] [--id=9-digit-number] [--host=name or address]\n");
@@ -471,4 +471,19 @@ void print_and_log(int hour, int min, int sec, double temperature){
 
 void do_when_interrupted(){
     shutdown_flag = 1;
+}
+
+void check_id(int val){
+    int number = 0;
+    while(val > 0){
+        val /= 10;
+        number++;
+    }
+    if(number == 9){
+        return;
+    }
+    else{
+        fprintf(stderr, "id is not 9 digits\n");
+        exit(1);
+    }
 }

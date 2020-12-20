@@ -153,6 +153,7 @@ int main(int argc, char ** argv){
             case 'i':
                 i_flag = 1;
                 i_arg = atoi(optarg);
+                check_id(i_arg);
                 break;
             default:
                 fprintf(stderr, "incorrect usage: lab4b [--period=#] [--scale=C|F] [--log=filename] [--id=9-digit-number] [--host=name or address]\n");
@@ -492,10 +493,6 @@ void print_and_log(int hour, int min, int sec, double temperature){
         fprintf(stderr, "error storing string in buffer\n");
         exit(2);
     }
-    // if(return_value_pf < 0 && entered){
-    //     fprintf(stderr, "error printing to socket\n");
-    //     exit(2);
-    // }
 
     if(l_flag && return_value_dpf < 0 && entered){
         fprintf(stderr, "error printing to log\n");
