@@ -99,7 +99,7 @@ int main(int argc, char ** argv){
     int ind = 0;
     int ch = 0;
     //argument parsing
-    while ( (ch = getopt_long(argc, argv, "p:s:l:h:", arr_option, &ind) ) != -1){
+    while ( (ch = getopt_long(argc, argv, "", arr_option, &ind) ) != -1){
         switch (ch){
             case 'p':
                 p_flag = 1;
