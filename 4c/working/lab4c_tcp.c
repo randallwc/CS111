@@ -148,6 +148,7 @@ int main(int argc, char ** argv){
             case 'i':
                 i_flag = 1;
                 i_arg = atoi(optarg);
+                break;
             default:
                 fprintf(stderr, "incorrect usage: lab4b [--period=#] [--scale=C|F] [--log=filename] [--id=9-digit-number] [--host=name or address]\n");
                 exit(1);
