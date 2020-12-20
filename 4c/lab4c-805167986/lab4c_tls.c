@@ -17,9 +17,9 @@
 // #include <ctype.h>
 // #include <sys/types.h>
 #include <sys/socket.h> //socket
-#include <netdb.h>
-#include <openssl/ssl.h>
-#include <netinet/in.h>
+#include <netdb.h> //sockaddr_in //htons
+#include <openssl/ssl.h> //SSL
+//#include <netinet/in.h>
 
 //set up constants for pins
 #define TEMP_PIN 1

@@ -16,7 +16,7 @@
 
 // #include <sys/types.h>
 #include <sys/socket.h> //socket
-#include <netdb.h>
+#include <netdb.h> //sockaddr_in//htons
 
 //set up constants for pins
 #define TEMP_PIN 1
