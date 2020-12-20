@@ -1,330 +1,472 @@
 // NAME: William Randall
 // EMAIL: wrandall1000@gmail.com
 // ID: 805167986
+// lab4c_tcp.c
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <getopt.h>
-#include <time.h>
-#include <poll.h>
-#include <math.h>
-#include <fcntl.h>
+#include <mraa.h> //aio and gpio
+#include <stdio.h> //fprintf
+#include <stdlib.h> //exit // rand
+#include <string.h> //strerror //atoi
+#include <getopt.h> //getopt
+#include <time.h> //timespec //clock_gettime
+#include <poll.h> //poll
+#include <fcntl.h> //open //creat //F_SETFL
+#include <unistd.h> //close //fork //pipe
+#include <math.h> //log
+
 #include <sys/types.h>
-#include <sys/socket.h>
+#include <sys/socket.h> //socket
 #include <netdb.h>
-#include <mraa.h>
 
-char USAGE_STR[] = "Usage: \"./lab4b --period=# --scale=[C|F] --log=[file] --id=# --host=[name|addr] [port#]\"\n";
+//set up constants for pins
+#define TEMP_PIN 1
+// #define BUTTON_PIN 60
+//set up constants for server
+int id = 111111111;
+int port = 18000;
 
-int SENSOR_PIN = 1;
-int BUTTON_PIN = 60;
-
-double convert(int reading, char scale);
-uint32_t parse_host(char * host);
-void shut(int sock);
-
-int main(int argc, char ** const argv)
+//GLOBAL STRUCT
+static struct option arr_option[] =
 {
-    int i;
-    
-    // temp args
-    int period = 1;
-    char scale = 'F';
-    
-    // log args
-    int log = 0;
-    char * logfile = NULL;
-    
-    // server args
-    int id = 121343565;
-    char * host = NULL;
-    int port = 18000;
-    
-    // handle opts
-    int opt;
-    static struct option long_options[] =
-    {
-        {"period", required_argument, 0, 'p'},
-        {"scale", required_argument, 0, 's'},
-        {"log", required_argument, 0, 'l'},
-        {"id", required_argument, 0, 'i'},
-        {"host", required_argument, 0, 'h'},
-        {0, 0, 0, 0}
-    };
-    while (1)
-    {
-        opt = getopt_long(argc, argv, "", long_options, NULL);
-        if (opt == -1)
-        {
-            break;
-        }
-        switch (opt)
-        {
+    {"period",  required_argument,      0,  'p'},
+    {"scale",   required_argument,      0,  's'},
+    {"log",     required_argument,      0,  'l'},
+    {"id",      required_argument,      0,  'i'},
+    {"host",    required_argument,      0,  'h'},
+    {0, 0, 0, 0}
+};
+//--period=#                //default 1(seconds)
+//--scale=C (or --scale=F)  //default F
+//log=filename              //optional
+
+//flag variables
+int p_flag = 0;
+int s_flag = 0;
+int l_flag = 0;
+int i_flag = 0;
+int h_flag = 0;
+int run_flag = 1;
+int shutdown_flag = 0;
+int SHUTDOWN_PRINTED = 0;
+
+//argument variables
+int p_arg       = 1;
+char s_arg      = 'F';
+char * l_arg    = NULL;
+int logfd       = -1;
+char * h_arg    = NULL;
+int i_arg       = id;
+
+
+//buffers
+char read_buf[256] = {0};
+int read_length = 0;
+
+//socket
+int sockfd = -1;
+
+//helper functions
+double get_temp(int temp_reading, char scale);
+void print_and_log(int hour, int min, int sec, double temperature);
+void do_when_interrupted();
+
+//stdin arguments
+/**
+    SCALE=F
+        all subsequent reports to be generated in degrees Fahrenheit
+    SCALE=C
+        all subsequent reports to be generated in degrees Centegrade
+    PERIOD=seconds
+        change the number of seconds between reporting intervals
+        It is acceptable if this command does not take effect until after the next report.
+    STOP
+        cause the program to stop generating reports, but continue processing input commands.
+        If the program is not generating reports, merely log receipt of the command.
+    START
+        cause the program to, if stopped, resume generating reports.
+        If the program is not stopped, merely log receipt of the command.
+    LOG line of text
+        This command requires no action beyond logging its receipt (the entire command, including the LOG).
+    OFF
+        (like pressing the button) output (and log) a time-stamped SHUTDOWN message and exit.
+*/
+
+//ex output:
+//"17:25:58 98.6\n"
+//write to socket
+
+int main(int argc, char ** argv){
+
+    int ind = 0;
+    int ch = 0;
+    //argument parsing
+    while ( (ch = getopt_long(argc, argv, "p:s:l:h:", arr_option, &ind) ) != -1){
+        switch (ch){
             case 'p':
-                period = atoi(optarg);
+                p_flag = 1;
+                p_arg = atoi(optarg);
+                if(p_arg <= 0){
+                    fprintf(stderr, "period must be greater than 0\n");
+                    exit(1);
+                }
                 break;
             case 's':
-                scale = *optarg;
+                s_flag = 1;
+                //check if len==1
+                if(strlen(optarg) != 1){
+                    fprintf(stderr, "incorrect usage: lab4b [--period=#] [--scale=C|F] [--log=filename] [----id=9-digit-number] [--host=name or address]\n");
+                    exit(1);
+                }
+                //check if F or C
+                if(optarg[0] == 'F'){
+                    s_arg = *optarg;
+                }
+                else if(optarg[0] == 'C'){
+                    s_arg = *optarg;
+                }
+                else{
+                    fprintf(stderr, "incorrect usage: lab4b [--period=#] [--scale=C|F] [--log=filename] [----id=9-digit-number] [--host=name or address]\n");
+                    exit(1);
+                }
                 break;
             case 'l':
-                log = 1;
-                logfile = optarg;
-                break;
-            case 'i':
-                id = atoi(optarg);
+                l_flag = 1;
+                l_arg = optarg;
+                if(l_arg == NULL){
+                    fprintf(stderr, "invalid log file\n");
+                    exit(1);
+                }
                 break;
             case 'h':
-                host = optarg;
+                h_flag = 1;
+                h_arg = optarg;
+                if(h_arg == NULL){
+                    fprintf(stderr, "invalid host argument\n");
+                    exit(1);
+                }
                 break;
+            casee 'i':
+                i_flag = 1;
+                i_arg = atoi(optarg);
+                if((floor(log10(abs(id))) + 1) != 9){
+                    fprintf(stderr, "id must be 9 digits long\n");
+                    exit(1);
+                }
             default:
-                fprintf(stderr, "%s", USAGE_STR);
+                fprintf(stderr, "incorrect usage: lab4b [--period=#] [--scale=C|F] [--log=filename] [----id=9-digit-number] [--host=name or address]\n");
                 exit(1);
         }
     }
-    
-    // get port
-    if (optind < argc)
-    {
+
+    //set up port number
+    if(optind < argc){
         port = atoi(argv[optind]);
     }
-    else
-    {
-        fprintf(stderr, "%s", USAGE_STR);
+    else{
+        fprintf(stderr, "no port number: incorrect usage: lab4b [--period=#] [--scale=C|F] [--log=filename] [----id=9-digit-number] [--host=name or address]\n");
         exit(1);
     }
-    
-    // set up log
-    if (log)
-    {
-        log = open(logfile, O_WRONLY | O_APPEND | O_CREAT, 0666);
-        if (log < 0)
-        {
+
+    //set up log file
+    if(l_flag && l_arg != NULL){
+        logfd = open(l_arg, O_WRONLY | O_APPEND | O_CREAT, 0666);
+        if(logfd < 0){
+            fprintf(stderr, "error on log file\n");
             exit(2);
         }
     }
-    
-    // create socket
-    int sock = socket(AF_INET, SOCK_STREAM, 0);
-    if (sock == -1)
-    {
-        fprintf(stderr, "Socket initialization failed\n");
+
+    //make socket
+    sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    if (sockfd == -1){
+        fprintf(stderr, "error creating socket\n");
         exit(2);
     }
-    
-    // create socket address
-    struct sockaddr_in saddr;
-    bzero((char * ) &saddr, sizeof(saddr));
-    saddr.sin_family = AF_INET;
-    saddr.sin_port = htons(port);
-    
-    // set ip address
-    struct hostent * server_ip = gethostbyname(host);
-    memcpy((char *)(&saddr.sin_addr.s_addr), (char *)(server_ip->h_addr), server_ip->h_length);
-    
-    // connect
-    if (connect(sock, (const struct sockaddr *) &saddr, sizeof(saddr)) == -1)
-    {
-        fprintf(stderr, "Socket connection failed\n");
+
+    //get the socket address
+    struct sockaddr_in socket_address;
+    bzero((char *) &socket_address, sizeof(socket_address));
+    socket_address.sin_family = AF_INET;
+    socket_address.sin_port = htons(p_arg);
+
+    //get the server ip address
+    struct hostent * server_ip_address = gethostbyname(h_arg);
+    //copy over the s_addr from the server entity
+    memcpy(
+        (char *)(&saddr.sin_addr.s_addr), 
+        (char *)(server_ip_address->h_addr), 
+        server_ip_address->h_length
+    );
+
+    //connect to the server
+    //connect to server
+    if (connect(sockfd, (struct sockaddr *)&socket_address, sizeof(socket_address)) < 0){
+        fprintf(stderr, "error with connect\n");
         exit(2);
     }
-    
-    // send ID num
-    dprintf(sock, "ID=%i\n", id);
-    if (log)
-    {
-        dprintf(log, "ID=%i\n", id);
+
+    //send the id
+    dprintf(sockfd, "ID=%i\n", id);
+    if(l_flag){
+        int return_value_dpf = dprintf(logfd, "ID=%i\n", id);
+        if(return_value_dpf < 0){
+            fprintf(stderr, "error printing to log\n");
+            exit(1);
+        }
     }
-    
-    // set up sensor
-    mraa_aio_context tsensor = mraa_aio_init(SENSOR_PIN);
-    if (tsensor == NULL)
-    {
-        fprintf(stderr, "Failed to initialize sensor\n");
+
+    //sensor initialization
+    mraa_aio_context sensor;
+    sensor = mraa_aio_init(TEMP_PIN);
+
+    if(sensor == NULL){
         mraa_deinit();
+        fprintf(stderr, "temperature sensor failed to initialize\n");
         exit(2);
     }
-    
-    // set up poll
-    struct pollfd plist[1];
-    plist[0].fd = sock;
-    plist[0].events = POLLIN;
-    
-    // data
-    int run = 1;
-    int shutdown = 0;
-    double temp = 0.00;
-    
-    // command line
-    int rret = 0;
-    char rbuf[256] = {0};
-    char ibuf[256] = {0};
-    int istart = 0;
-    int inorm = 0;
-    
-    // set up time
-    time_t raw;
-    struct tm prev;
-    struct tm cur;
-    int elapsed = 0;
-    int printed = 0;
-    
-    // first iter
-    
-    // get temp
-    temp = convert(mraa_aio_read(tsensor), scale);
-    
-    // get time
-    time(&raw);
-    cur = *localtime(&raw);
-    
-    // print
-    dprintf(sock, "%02d:%02d:%02d %.1f\n", cur.tm_hour, cur.tm_min, cur.tm_sec, temp);
-    if (log)
-    {
-        dprintf(log, "%02d:%02d:%02d %.1f\n", cur.tm_hour, cur.tm_min, cur.tm_sec, temp);
-    }
-    printed = cur.tm_sec;
-    prev = cur;
-    
-    while (1)
-    {
-        poll(plist, 1, 0);
+
+    //get initial temp
+    int temp_reading = mraa_aio_read(sensor);
+    double temperature = get_temp(temp_reading, s_arg);
+
+    //time variables
+    struct tm current_time;
+    time_t curr_t, last_t;
+
+    //start time
+    time(& curr_t);
+    current_time = * localtime(& curr_t);
+
+    //print first temperature reading
+    print_and_log(current_time.tm_hour, current_time.tm_min, current_time.tm_sec, temperature);
+    last_t = curr_t;
+
+    //poll
+    struct pollfd poll_sock;
+    poll_sock.fd = sockfd;
+    poll_sock.events = POLLIN;
+    poll_sock.revents = 0;
+
+    while(!shutdown_flag){
+        //update temperature
+        temp_reading = mraa_aio_read(sensor);
+        temperature = get_temp(temp_reading, s_arg);
+
+        //update time
+        time(& curr_t);
+        current_time = * localtime(& curr_t);
+
+        //print if correct conditions
+        /**
+        run_flag is true
+        the difference between the current time and the last time is greater than the period
+        */
+        int can_print = run_flag && (curr_t - last_t) >= p_arg;
+
+        if(can_print){
+            print_and_log(current_time.tm_hour, current_time.tm_min, current_time.tm_sec, temperature);
+            last_t = curr_t;
+        }
+
+        //poll for input
+        int poll_val = poll(&poll_sock, 1, 0);
+
+        if(poll_val != 1){
+            continue;
+        }
+
+        if((poll_sock.revents & POLLERR) == POLLERR){
+            fprintf(stderr, "error when polling\n");
+            exit(1);
+        }
         
-        // get temp
-        temp = convert(mraa_aio_read(tsensor), scale);
-        
-        // get time
-        time(&raw);
-        cur = *localtime(&raw);
-        elapsed = (cur.tm_min * 60 + cur.tm_sec) - (prev.tm_min * 60 + prev.tm_sec);
-        
-        // print
-        if (run && elapsed > 0 && elapsed % period == 0)
-        {
-            if (cur.tm_sec != printed)
-            {
-                dprintf(sock, "%02d:%02d:%02d %.1f\n", cur.tm_hour, cur.tm_min, cur.tm_sec, temp);
-                
-                if (log)
-                {
-                    dprintf(log, "%02d:%02d:%02d %.1f\n", cur.tm_hour, cur.tm_min, cur.tm_sec, temp);
+        if((poll_sock.revents & POLLIN) == POLLIN){
+            //read from STDIN
+            read_length = read(STDIN_FILENO, read_buf, 256);
+
+            //loop through each char in the read buffer
+            int i = 0;
+            int previous_i = 0;
+            for(i = 0; i < read_length; i++){
+                char * argument_value;
+
+                //find the \n or loop till length
+                while(i < read_length && read_buf[i] != '\n'){
+                    i++;
                 }
-                
-                printed = cur.tm_sec;
-                prev = cur;
-            }
-        }
-        
-        // get input
-        if (plist[0].revents & POLLIN)
-        {
-            rret = read(sock, rbuf, 256);
-            for (i = 0; i < rret; i++)
-            {
-                ibuf[istart + i - inorm] = rbuf[i];
-                
-                // interpret input
-                if (rbuf[i] == '\n')
-                {
-                    if (log)
-                    {
-                        write(log, ibuf, istart + i - inorm + 1);
+                //if there is no \n then break
+                if(i == read_length){
+                    break;
+                }
+
+                //if found \n
+                if(read_buf[i] == '\n'){
+                    //log everything in read buffer until this point
+                    if(l_flag){
+                        int write_length = write(logfd, &read_buf[previous_i], i - previous_i + 1);
+                        if(write_length < 0){
+                            fprintf(stderr, "error writing command to log file\n");
+                            exit(2);
+                        }
+                        fsync(logfd);
                     }
-                    
-                    if (!strncmp(ibuf, "SCALE", 5))
-                    {
-                        scale = ibuf[6];
+
+                    //replace \n with end of string
+                    read_buf[i] = '\0';
+
+                    char* argument = read_buf + previous_i;
+
+                    int is_scale    = strncmp(argument, "SCALE=", 6);
+                    int is_period   = strncmp(argument, "PERIOD=", 7);
+                    int is_log      = strncmp(argument, "LOG", 3);
+
+                    int is_stop     = strcmp(argument, "STOP");
+                    int is_start    = strcmp(argument, "START");
+                    int is_off      = strcmp(argument, "OFF");
+
+                    if(is_scale == 0){
+                        //get the value
+                        previous_i += 6;
+                        argument_value = read_buf + previous_i;
+                        if(strlen(argument_value) != 1){
+                            fprintf(stderr, "incorrect use of scale\n");
+                            exit(1);
+                        }
+
+                        int isC = strcmp(argument_value, "C");
+                        int isF = strcmp(argument_value, "F");
+
+                        if(isC == 0){
+                            s_arg = 'C';
+                        }
+                        else if(isF == 0){
+                            s_arg = 'F';
+                        }
+                        else{
+                            fprintf(stderr, "incorrect use of scale must be C or F\n");
+                            exit(1);
+                        }
                     }
-                    
-                    else if (!strncmp(ibuf, "PERIOD", 6))
-                    {
-                        ibuf[istart + i - inorm] = '\0';
-                        char num[4] = {0};
-                        strcpy(num, ibuf + 7);
-                        period = atoi(num);
+                    if(is_period == 0){
+                        //get the value
+                        previous_i += 7;
+                        argument_value = read_buf + previous_i;
+
+                        int input = atoi(argument_value);
+                        if(input <= 0){
+                            fprintf(stderr, "incorrect use of period must be greater than 0\n");
+                            exit(1);
+                        }
+                        p_arg = input;
                     }
-                    
-                    else if (!strncmp(ibuf, "STOP", 4))
-                    {
-                        run = 0;
+                    if(is_log == 0){
+                        //do nothing
                     }
-                    
-                    else if (!strncmp(ibuf, "START", 5))
-                    {
-                        run = 1;
+                    if(is_stop == 0){
+                        run_flag = 0;
                     }
-                    
-                    else if (!strncmp(ibuf, "LOG", 3))
-                    {
+                    if(is_start == 0){
+                        run_flag = 1;
                     }
-                    
-                    else if (!strncmp(ibuf, "OFF", 3))
-                    {
-                        shutdown = 1;
+                    if(is_off == 0){
+                        shutdown_flag = 1;
+                        break;
                     }
-                    
-                    istart = 0;
-                    inorm = i + 1;
+                    previous_i = i + 1;
                 }
             }
-            
-            // move istart to ibuf continuation point
-            if (rbuf[rret - 1] != '\n')
-            {
-                istart = rret - inorm;
-            }
-            inorm = 0;
-        }
-        
-        // check shutdown
-        if (shutdown)
-        {
-            break;
         }
     }
-    
-    // shutdown
-    
-    // get time
-    time(&raw);
-    cur = *localtime(&raw);
-    
-    // print shutdown
-    dprintf(sock, "%02d:%02d:%02d SHUTDOWN\n", cur.tm_hour, cur.tm_min, cur.tm_sec);
-    if (log)
-    {
-        dprintf(log, "%02d:%02d:%02d SHUTDOWN\n", cur.tm_hour, cur.tm_min, cur.tm_sec);
+
+    //get final time
+    time(& curr_t);
+    current_time = * localtime(& curr_t);
+
+    //print shutdown if not already printed
+    print_and_log(current_time.tm_hour, current_time.tm_min, current_time.tm_sec, -1.0);
+
+    //close sensor
+    if(mraa_aio_close(sensor) != MRAA_SUCCESS){
+        fprintf(stderr, "error closing sensor\n");
+        exit(3);
     }
-    
-    // close socket
-    shut(sock);
-    
-    // close sensor
-    if (mraa_aio_close(tsensor) != MRAA_SUCCESS)
-    {
-        fprintf(stderr, "Failed to close AIO\n");
-        exit(2);
+
+    // //close button
+    // if(mraa_gpio_close(button) != MRAA_SUCCESS){
+    //     fprintf(stderr, "error closing button\n");
+    //     exit(3);
+    // }
+
+    //close log
+    if(l_flag){
+        close(logfd);
     }
-    
+
+    //close socket
+    close(sockfd);
     return 0;
 }
 
-double convert(int reading, char scale)
-{
-    const int B = 4275;
-    double R = ( 1023.0 / ((double)reading) ) - 1.0;
-    R *= 100000.0;
-    double temp = 1.0 / (log(R/100000.0)/B + 1/298.15) - 273.15;
-    if (scale == 'F')
-    {
-        return temp * 9/5 + 32;
+double get_temp(int temp_reading, char scale){
+    //set up constants for temp reading
+    const int B = 4275;     // B value of the thermistor
+    const double R0 = 100000;   // R0 = 100k
+
+    //convert to C or F
+    double R = (1023.0/ (double) temp_reading) - 1.0;
+    R *= R0;
+
+    // convert to temperature via datasheet
+    double temperature_c = 1.0 / (log(R / R0) / B + 1.0 / 298.15) - 273.15;
+
+    //convert C to F
+    double temperature_f = temperature_c * (9.0/5.0) + 32.0;
+
+    //output one or the other
+    if(scale == 'C'){
+        return temperature_c;
     }
-    return temp;
+    else if(scale == 'F'){
+        return temperature_f;
+    }
+    else{
+        fprintf(stderr, "invalid use of scale argument\n");
+        exit(1);
+        return -1;
+    }
 }
 
-void shut(int sock)
-{
-    shutdown(sock, SHUT_RDWR);
+void print_and_log(int hour, int min, int sec, double temperature){
+    int return_value_pf = -1;
+    int return_value_dpf = -1;
+
+    //print shutdown
+    if(shutdown_flag && !SHUTDOWN_PRINTED){
+        return_value_pf = dprintf(sockfd,"%02d:%02d:%02d SHUTDOWN\n", hour, min, sec);
+        if(l_flag)
+            return_value_dpf = dprintf(logfd, "%02d:%02d:%02d SHUTDOWN\n", hour, min, sec);
+        SHUTDOWN_PRINTED = 1;
+    }
+
+    //print normally
+    else if(!SHUTDOWN_PRINTED){
+        return_value_pf = dprintf(sockfd,"%02d:%02d:%02d %.1f\n", hour, min, sec, temperature);
+        if(l_flag)
+            return_value_dpf = dprintf(logfd, "%02d:%02d:%02d %.1f\n", hour, min, sec, temperature);
+    }
+
+    //check for errors
+    if(return_value_pf < 0){
+        fprintf(stderr, "error printing to socket\n");
+        exit(1);
+    }
+
+    if(l_flag && return_value_dpf < 0){
+        fprintf(stderr, "error printing to log\n");
+        exit(1);
+    }
+}
+
+void do_when_interrupted(){
+    shutdown_flag = 1;
 }
