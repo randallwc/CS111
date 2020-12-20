@@ -14,14 +14,19 @@
 #include <unistd.h> //close //fork //pipe
 #include <math.h> //log
 
-#include <sys/types.h>
+// #include <ctype.h>
+// #include <sys/types.h>
 #include <sys/socket.h> //socket
 #include <netdb.h>
+#include <openssl/ssl.h>
+#include <netinet/in.h>
 
 //set up constants for pins
 #define TEMP_PIN 1
 //set up constants for server
-int port = 18000;
+int port = 19000;
+SSL *ssl = NULL;
+SSL_CTX *ssl_ctx = NULL;
 
 //GLOBAL STRUCT
 static struct option arr_option[] =
@@ -58,6 +63,7 @@ int i_arg       = 111111111;
 
 //buffers
 char read_buf[256] = {0};
+char sendBuf[32];
 int read_length = 0;
 
 //socket
@@ -198,10 +204,39 @@ int main(int argc, char ** argv){
         exit(2);
     }
 
+    //initialize ssl
+    SSL_library_init();
+    SSL_load_error_strings();
+    OpenSSL_add_all_algorithms();
+    
+    ssl_ctx = SSL_CTX_new(TLSv1_client_method());
+    if ( ssl_ctx == NULL ){
+        fprintf(stderr, "error with ssl context\n");
+        exit(2);
+    }
+    ssl = SSL_new(ssl_ctx);
+    if (ssl == NULL){
+        fprintf(stderr, "error with ssl init\n");
+        exit(2);
+    }
+    // ssl connect
+    if (!SSL_set_fd(ssl, sockfd)){
+        fprintf(stderr, "error with ssl association");
+        exit(2);
+    }
+    if (SSL_connect(ssl) != 1){
+        fprintf(stderr, "error with ssl connect\n");
+        exit(2);
+    }
+
     //send the id
-    dprintf(sockfd, "ID=%i\n", i_arg);
+    if (sprintf(send_buf, "ID=%d\n", id) < 0){
+        fprintf(stderr, "error storing string in buffer\n");
+        exit(1);
+    }
+    SSL_write(ssl, send_buf, strlen(send_buf));
     if(l_flag){
-        int return_value_dpf = dprintf(logfd, "ID=%i\n", i_arg);
+        int return_value_dpf = write(logfd, send_buf, strlen(send_buf));
         if(return_value_dpf < 0){
             fprintf(stderr, "error printing to log\n");
             exit(1);
@@ -274,8 +309,8 @@ int main(int argc, char ** argv){
         }
         
         if((poll_sock.revents & POLLIN) == POLLIN){
-            //read from STDIN
-            read_length = read(sockfd, read_buf, 256);
+            //read from socket ssl
+            read_length = SSL_read(ssl, read_buf, 256);
 
             //loop through each char in the read buffer
             int i = 0;
@@ -391,6 +426,8 @@ int main(int argc, char ** argv){
 
     //close socket
     close(sockfd);
+    SSL_shutdown(ssl);
+    SSL_free(ssl);
     return 0;
 }
 
@@ -433,7 +470,7 @@ void print_and_log(int hour, int min, int sec, double temperature){
     //print shutdown
     if(shutdown_flag && !SHUTDOWN_PRINTED){
         return_value_spf = sprintf(logBuffer, "%02d:%02d:%02d SHUTDOWN\n", hour, min, sec);
-        return_value_pf = write(sockfd,logBuffer, strlen(logBuffer));
+        SSL_write(ssl,logBuffer, strlen(logBuffer));
         if(l_flag)
             return_value_dpf = write(logfd,logBuffer, strlen(logBuffer));
         SHUTDOWN_PRINTED = 1;
@@ -443,7 +480,7 @@ void print_and_log(int hour, int min, int sec, double temperature){
     //print normally
     else if(!SHUTDOWN_PRINTED){
         return_value_spf = sprintf(logBuffer, "%02d:%02d:%02d %.1f\n", hour, min, sec, temperature);
-        return_value_pf = write(sockfd,logBuffer, strlen(logBuffer));
+        SSL_write(ssl,logBuffer, strlen(logBuffer));
         if(l_flag)
             return_value_dpf = write(logfd,logBuffer, strlen(logBuffer));
         entered = 1;
@@ -454,10 +491,10 @@ void print_and_log(int hour, int min, int sec, double temperature){
         fprintf(stderr, "error storing string in buffer\n");
         exit(2);
     }
-    if(return_value_pf < 0 && entered){
-        fprintf(stderr, "error printing to socket\n");
-        exit(2);
-    }
+    // if(return_value_pf < 0 && entered){
+    //     fprintf(stderr, "error printing to socket\n");
+    //     exit(2);
+    // }
 
     if(l_flag && return_value_dpf < 0 && entered){
         fprintf(stderr, "error printing to log\n");

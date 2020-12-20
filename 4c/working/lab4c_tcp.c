@@ -205,7 +205,7 @@ int main(int argc, char ** argv){
         int return_value_dpf = dprintf(logfd, "ID=%i\n", i_arg);
         if(return_value_dpf < 0){
             fprintf(stderr, "error printing to log\n");
-            exit(1);
+            exit(2);
         }
     }
 
@@ -275,7 +275,7 @@ int main(int argc, char ** argv){
         }
         
         if((poll_sock.revents & POLLIN) == POLLIN){
-            //read from STDIN
+            //read from socket
             read_length = read(sockfd, read_buf, 256);
 
             //loop through each char in the read buffer
