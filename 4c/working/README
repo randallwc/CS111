@@ -1,0 +1,27 @@
+NAME: William Randall
+EMAIL: wrandall1000@gmail.com
+ID: 805167986
+
+I am letting Amrith Deepak use my beaglebone to run and debug his code.
+Amrith Deepak's uid is 105331462
+
+Files:
+lab4c_tcp.c ...
+lab4c_tls.c	... Source code file for temperature reading
+Makefile 	... Make file with 4 options
+README 		... This file
+
+vpnc:
+sudo vpnc --gateway=vpn.ucla.edu --id=UCLAIPSEC --username=wrandall
+===/etc/vpnc/default.conf===
+IPSec gateway vpn.ucla.edu
+IPSec ID UCLAIPSEC
+IPSec secret R2d3gg!#5
+Xauth username wrandall
+===end===
+
+Source:
+https://ucla.app.box.com/v/itsupport-ipsec-settings
+https://piazza.com/class/kfmq2lzszqq2rh?cid=627
+https://www.debuntu.org/how-to-connect-to-a-cisco-vpn-with-vpnc/
+https://ucla.app.box.com/v/itsupport-ipsec-settings
